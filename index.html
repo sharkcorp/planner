@@ -776,6 +776,7 @@ async function mv(id,dir){
 // SCHEDULE + CALENDAR
 let calYear=now.getFullYear(), calMonth=now.getMonth();
 let selectedDate=null; // null = today
+let calOpen=false; // calendar collapsed by default
 
 function dateStr(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
 function todayStr(){return dateStr(now.getFullYear(),now.getMonth(),now.getDate());}
@@ -792,35 +793,44 @@ function rSched(c){
   const tStr=todayStr();
   const sStr=selDateStr();
 
-  // Build calendar
-  let calH=`<div class="cal-header">
-    <button class="cal-nav" onclick="calPrev()">‹</button>
-    <div class="cal-month">${MN2[calMonth]} ${calYear}</div>
-    <button class="cal-nav" onclick="calNext()">›</button>
-  </div>
-  <div class="cal-grid-head">${DLH.map(d=>`<span>${d}</span>`).join('')}</div>
-  <div class="cal-grid">`;
+  // Build calendar (collapsible)
+  const selD2=new Date(sStr+'T00:00:00');
+  const isSelToday2=sStr===tStr;
+  const selLabel=isSelToday2?'Сегодня':`${selD2.getDate()} ${selMN[selD2.getMonth()]}`;
 
-  for(let i=0;i<firstMon;i++) calH+=`<div class="cal-cell empty"></div>`;
-  for(let d=1;d<=daysInCal;d++){
-    const ds=dateStr(calYear,calMonth,d);
-    const isToday=ds===tStr;
-    const isSel=ds===sStr;
-    const isFut=ds>tStr;
-    // Check if has events
-    const hasItems=schedule.some(s=>s.sched_date===ds||(s.repeat&&s.repeat!=='none'))||tasks.some(t=>t.task_date===ds);
-    let cls='cal-cell'+(isToday?' today':'')+(isSel?' selected':'')+(isFut?' future':'');
-    calH+=`<div class="${cls}" onclick="selectDay('${ds}')">
-      <div class="c-num">${d}</div>
-      ${hasItems?'<div class="c-dot"></div>':''}
-    </div>`;
+  let calH=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="font-size:15px;font-weight:700;color:var(--txt)">${selLabel}</div>
+      ${!isSelToday2?`<span onclick="selectDay('${tStr}')" style="font-size:11px;color:var(--gr2);cursor:pointer;font-weight:600">← Сегодня</span>`:''}
+    </div>
+    <button onclick="toggleCal()" style="display:flex;align-items:center;gap:4px;border:1.5px solid var(--brd);background:var(--white);border-radius:10px;padding:5px 10px;cursor:pointer;font-size:12px;color:var(--mu);font-family:inherit;font-weight:600">
+      📅 ${calOpen?'Скрыть':'Календарь'}
+    </button>
+  </div>`;
+
+  if(calOpen){
+    calH+=`<div class="cal-header">
+      <button class="cal-nav" onclick="calPrev()">‹</button>
+      <div class="cal-month">${MN2[calMonth]} ${calYear}</div>
+      <button class="cal-nav" onclick="calNext()">›</button>
+    </div>
+    <div class="cal-grid-head">${DLH.map(d=>`<span>${d}</span>`).join('')}</div>
+    <div class="cal-grid">`;
+    for(let i=0;i<firstMon;i++) calH+=`<div class="cal-cell empty"></div>`;
+    for(let d=1;d<=daysInCal;d++){
+      const ds=dateStr(calYear,calMonth,d);
+      const isToday=ds===tStr;
+      const isSel=ds===sStr;
+      const isFut=ds>tStr;
+      const hasItems=schedule.some(s=>s.sched_date===ds||(s.repeat&&s.repeat!=='none'))||tasks.some(t=>t.task_date===ds);
+      let cls='cal-cell'+(isToday?' today':'')+(isSel?' selected':'')+(isFut?' future':'');
+      calH+=`<div class="${cls}" onclick="selectDay('${ds}')"><div class="c-num">${d}</div>${hasItems?'<div class="c-dot"></div>':''}</div>`;
+    }
+    calH+=`</div>`;
   }
-  calH+='</div>';
 
   // Selected day content
   const selD=new Date(sStr+'T00:00:00');
-  const selWD=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
-  const selMN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
   const isSelToday=sStr===tStr;
   const isSelFuture=sStr>tStr;
 
@@ -847,9 +857,10 @@ function rSched(c){
     return ta.localeCompare(tb);
   });
 
+  const selWD2=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
   let dayH=`<div class="cal-day-title">
-    ${selWD[dowOfSel]}, ${selD.getDate()} ${selMN[selD.getMonth()]}
-    <span onclick="openMForDate('${sStr}')" style="color:var(--gr2);cursor:pointer;font-weight:600">+ Добавить</span>
+    <span style="font-size:12px;color:var(--mu)">${selWD2[dowOfSel]}, ${selD.getDate()} ${selMN[selD.getMonth()]}</span>
+    <span onclick="openMForDate('${sStr}')" style="color:var(--gr2);cursor:pointer;font-weight:600;font-size:13px">+ Добавить</span>
   </div>`;
 
   if(!allItems.length){
@@ -887,10 +898,16 @@ function rSched(c){
 
 function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}render();}
 function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}render();}
-function selectDay(ds){selectedDate=ds;render();}
+function toggleCal(){calOpen=!calOpen;render();}
+function selectDay(ds){
+  selectedDate=ds;
+  // Sync calendar month to selected date
+  const d=new Date(ds+'T00:00:00');
+  calMonth=d.getMonth();calYear=d.getFullYear();
+  render();
+}
 function openMForDate(ds){
   openM();
-  // Store target date
   window._addForDate=ds;
 }
 
