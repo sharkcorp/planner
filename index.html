@@ -52,22 +52,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .nb.active{background:var(--grs);color:var(--gr2)}
 
 /* PROGRESS CARD */
-.prog-card{background:var(--white);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 20px rgba(114,194,92,.1);border:1.5px solid var(--brd)}
+.prog-card{background:#1e2d16;border-radius:var(--r);padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 24px rgba(30,45,22,.25);border:none}
 .prog-top{display:flex;align-items:center;gap:14px}
 .ring-wrap{position:relative;width:60px;height:60px;flex-shrink:0}
 .ring-lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ring-pct{font-size:13px;font-weight:800;color:var(--gr2);line-height:1}
-.ring-day{font-size:8px;color:var(--mu);margin-top:1px}
-.prog-info .pt{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
-.prog-info .ps{font-size:11px;color:var(--mu)}
+.ring-pct{font-size:13px;font-weight:800;color:#c5f135;line-height:1}
+.ring-day{font-size:8px;color:rgba(255,255,255,.5);margin-top:1px}
+.prog-info .pt{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.prog-info .ps{font-size:11px;color:rgba(255,255,255,.55)}
 .stats-row{display:flex;gap:7px;margin-top:11px}
 .st{flex:1;border-radius:12px;padding:7px 6px;text-align:center}
 .st-n{font-size:15px;font-weight:800}
 .st-l{font-size:9px;margin-top:1px}
-.st.g{background:var(--grs)}.st.g .st-n{color:var(--gr2)}.st.g .st-l{color:var(--mu)}
-.st.r{background:var(--rose)}.st.r .st-n{color:var(--rose2)}.st.r .st-l{color:var(--rose2)}
-.st.s{background:var(--sky)}.st.s .st-n{color:var(--sky2)}.st.s .st-l{color:var(--mu)}
-.st.p{background:var(--peach)}.st.p .st-n{color:var(--peach2)}.st.p .st-l{color:var(--mu)}
+.st.g{background:rgba(197,241,53,.15)}.st.g .st-n{color:#c5f135}.st.g .st-l{color:rgba(255,255,255,.5)}
+.st.r{background:rgba(255,255,255,.1)}.st.r .st-n{color:#fff}.st.r .st-l{color:rgba(255,255,255,.5)}
+.st.s{background:rgba(255,255,255,.08)}.st.s .st-n{color:#fff}.st.s .st-l{color:rgba(255,255,255,.5)}
+.st.p{background:rgba(255,255,255,.08)}.st.p .st-n{color:#fff}.st.p .st-l{color:rgba(255,255,255,.5)}
 
 /* CONTENT */
 .content{flex:1;overflow-y:auto;padding:0 14px 8px;-webkit-overflow-scrolling:touch}
@@ -133,7 +133,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .h-dot{width:100%;aspect-ratio:1;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center}
 .h-dot.on{background:var(--gr);border-color:var(--gr)}
 .h-dot.on svg{opacity:1}
-.h-dot svg{width:10px;height:10px;fill:#fff;opacity:0}
+.h-dot:not(.on) svg{opacity:0}
+.h-dot svg{width:10px;height:10px;fill:#fff}
 .h-dot.today-d{box-shadow:0 0 0 2px var(--gr2)}
 
 /* GOALS */
@@ -154,10 +155,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .g-del:hover{background:var(--rose2);color:#fff}
 
 /* FAB */
-.fab-row{padding:8px 14px 12px;display:flex;justify-content:flex-end;flex-shrink:0}
-.fab{width:52px;height:52px;border-radius:18px;background:var(--gr);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;box-shadow:0 6px 20px rgba(114,194,92,.4)}
+.fab-row{padding:4px 12px 8px;display:flex;justify-content:flex-end;flex-shrink:0}
+.fab{width:46px;height:46px;border-radius:14px;background:var(--gr);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;box-shadow:0 4px 16px rgba(114,194,92,.4)}
 .fab:active{transform:scale(.93)}
-.fab svg{width:26px;height:26px;fill:#fff}
+.fab svg{width:22px;height:22px;fill:#fff}
 
 /* SHEET */
 .ov{display:none;position:fixed;inset:0;background:rgba(30,50,25,.35);align-items:flex-end;z-index:100;backdrop-filter:blur(2px)}
@@ -219,13 +220,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
         </div>
       </div>
       <div class="nav">
-        <button class="nb active" onclick="sw('tasks')">
-          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-          <span class="nb-lbl">Задачи</span>
-        </button>
-        <button class="nb" onclick="sw('schedule')">
+        <button class="nb active" onclick="sw('schedule')">
           <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           <span class="nb-lbl">Расписание</span>
+        </button>
+        <button class="nb" onclick="sw('tasks')">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <span class="nb-lbl">Задачи</span>
         </button>
         <button class="nb" onclick="sw('habits')">
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
@@ -240,8 +241,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
         <div class="prog-top">
           <div class="ring-wrap">
             <svg width="60" height="60" viewBox="0 0 60 60" style="transform:rotate(-90deg);position:absolute;top:0;left:0">
-              <circle cx="30" cy="30" r="24" fill="none" stroke="#e4f5de" stroke-width="6"/>
-              <circle cx="30" cy="30" r="24" fill="none" stroke="#72c25c" stroke-width="6" stroke-linecap="round" id="prog-ring" stroke-dasharray="0 150.8"/>
+              <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="6"/>
+              <circle cx="30" cy="30" r="24" fill="none" stroke="#c5f135" stroke-width="6" stroke-linecap="round" id="prog-ring" stroke-dasharray="0 150.8"/>
             </svg>
             <div class="ring-lbl"><div class="ring-pct" id="ppct">0%</div><div class="ring-day">день</div></div>
           </div>
@@ -409,7 +410,7 @@ const daysInMonth = new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
 const MN2=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const DL=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 
-let tab='tasks';
+let tab='schedule';
 let tasks=[], schedule=[], habits=[], goals=[];
 
 async function loadAll() {
@@ -453,7 +454,7 @@ function upStats() {
   document.getElementById('prog-ring').setAttribute('stroke-dasharray',`${circ*pct/100} ${circ}`);
 }
 
-function sw(t){tab=t;document.querySelectorAll('.nb').forEach((b,i)=>{b.classList.toggle('active',['tasks','schedule','habits','goals'][i]===t)});render();}
+function sw(t){tab=t;document.querySelectorAll('.nb').forEach((b,i)=>{b.classList.toggle('active',['schedule','tasks','habits','goals'][i]===t)});render();}
 
 function getSorted(){return [...tasks.filter(t=>!t.done)].sort((a,b)=>a.priority-b.priority||a.time.localeCompare(b.time));}
 
@@ -649,23 +650,30 @@ async function addIt(){
     const me=await meRes.json();
     const uid=me.id;
     if(mTab==='tasks'){
-      const time=document.getElementById('inp-t').value||'09:00';
+      const time=document.getElementById('inp-t').value;
       const cat=document.getElementById('inp-cat').value;
       const priority=parseInt(document.getElementById('inp-p').value);
-      const res=await api('/rest/v1/tasks',{method:'POST',body:JSON.stringify({name,time,cat,priority,done:false,user_id:uid})});
-      tasks.push(...(res||[]));
+      const taskTime = time || '09:00';
+      const res=await api('/rest/v1/tasks',{method:'POST',body:JSON.stringify({name,time:taskTime,cat,priority,done:false,user_id:uid})});
+      const newTask = res && res[0];
+      if(newTask) tasks.push(newTask);
+      // Auto-add to schedule if time was specified
+      if(time) {
+        const sRes=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,user_id:uid})});
+        if(sRes && sRes[0]) schedule.push(sRes[0]);
+      }
     } else if(mTab==='schedule'){
       const time=document.getElementById('inp-t').value||'09:00';
       const cat=document.getElementById('inp-cat').value;
       const res=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,user_id:uid})});
-      schedule.push(...(res||[]));
+      if(res && res[0]) schedule.push(res[0]);
     } else if(mTab==='habits'){
       const res=await api('/rest/v1/habits',{method:'POST',body:JSON.stringify({name,done_days:[],user_id:uid})});
       const h=res&&res[0];if(h){h.done=new Set(h.done_days||[]);habits.push(h);}
     } else {
       const deadline=parseInt(document.getElementById('inp-deadline').value)||31;
       const res=await api('/rest/v1/goals',{method:'POST',body:JSON.stringify({name,deadline,done:false,user_id:uid})});
-      goals.push(...(res||[]));
+      if(res && res[0]) goals.push(res[0]);
     }
     closeM();render();
   } catch(e){alert('Ошибка: '+e.message);}
