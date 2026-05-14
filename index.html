@@ -191,7 +191,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .g-add-task{font-size:11px;color:var(--gr2);font-weight:600;padding:5px 0;cursor:pointer;display:flex;align-items:center;gap:4px}
 .g-expand{font-size:12px;color:var(--mu);cursor:pointer;padding:2px 6px;border-radius:8px;background:var(--bg);border:none;font-family:inherit}
 
-/* EVENING MODAL */
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-month{font-size:16px;font-weight:700;color:var(--txt)}
+.cal-nav{width:32px;height:32px;border:none;background:var(--white);border-radius:10px;cursor:pointer;font-size:18px;color:var(--mu);display:flex;align-items:center;justify-content:center;border:1.5px solid var(--brd)}
+.cal-grid-head{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
+.cal-grid-head span{text-align:center;font-size:9px;font-weight:700;color:var(--mu);padding:4px 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:16px}
+.cal-cell{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;position:relative;background:var(--white);border:1.5px solid var(--brd)}
+.cal-cell.empty{background:none;border-color:transparent;cursor:default}
+.cal-cell.today{border-color:var(--gr);color:var(--gr2);font-weight:700}
+.cal-cell.selected{background:var(--dark);border-color:var(--dark);color:#fff}
+.cal-cell .c-num{font-size:12px;font-weight:600;line-height:1}
+.cal-cell .c-dot{width:4px;height:4px;border-radius:50%;background:var(--gr);margin-top:2px}
+.cal-cell.selected .c-dot{background:#c5f135}
+.cal-cell.future{opacity:.5}
+.cal-day-title{font-size:14px;font-weight:700;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.cal-day-title span{font-size:12px;color:var(--mu);font-weight:400}
+
+/* EVENING MODAL *//* EVENING MODAL */
 .evening-modal{display:none;position:fixed;inset:0;background:rgba(30,50,25,.4);z-index:200;align-items:flex-end;backdrop-filter:blur(3px)}
 .evening-modal.open{display:flex}
 .evening-sheet{background:var(--white);border-radius:28px 28px 0 0;padding:24px 18px 40px;width:100%;max-width:430px;margin:0 auto}
@@ -755,32 +773,127 @@ async function mv(id,dir){
   await Promise.all([api(`/rest/v1/tasks?id=eq.${a.id}`,{method:'PATCH',body:JSON.stringify({priority:Math.round(a.priority)})}),api(`/rest/v1/tasks?id=eq.${b.id}`,{method:'PATCH',body:JSON.stringify({priority:Math.round(b.priority)})})]);
 }
 
-// SCHEDULE
+// SCHEDULE + CALENDAR
+let calYear=now.getFullYear(), calMonth=now.getMonth();
+let selectedDate=null; // null = today
+
+function dateStr(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+function todayStr(){return dateStr(now.getFullYear(),now.getMonth(),now.getDate());}
+function selDateStr(){return selectedDate||todayStr();}
+
 function rSched(c){
   const scBar={work:'srb-w',health:'srb-h',personal:'srb-p'};
   const repLabel={daily:'🔁 Каждый день',weekdays:'🔁 По будням',weekends:'🔁 Выходные'};
-  const recurring=schedule.filter(s=>s.repeat&&s.repeat!=='none').sort((a,b)=>a.time.localeCompare(b.time));
-  const oneTime=schedule.filter(s=>!s.repeat||s.repeat==='none').sort((a,b)=>a.time.localeCompare(b.time));
-  const active=oneTime.filter(s=>!isPast(s.time));
-  const past=oneTime.filter(s=>isPast(s.time));
-  let h='';
-  if(!schedule.length){h='<div class="empty"><div class="e-icon">📅</div><div class="e-title">Расписание пустое</div><div>Добавь первый блок</div></div>';}
-  else{
-    if(recurring.length){
-      h+=`<div class="sec-hd"><span class="sec-lbl">📌 Фиксированные</span><span class="sec-badge">${recurring.length}</span></div><div class="sched-wrap">`;
-      recurring.forEach(x=>{h+=srRow(x,false,scBar,repLabel)});h+='</div>';
-    }
-    if(active.length){
-      h+=`<div class="sec-hd" style="margin-top:10px"><span class="sec-lbl">Сегодня</span><span class="sec-badge">${active.length}</span></div><div class="sched-wrap">`;
-      active.forEach(x=>{h+=srRow(x,false,scBar,repLabel)});h+='</div>';
-    }
-    if(past.length){
-      h+=`<div class="past-label">Прошедшие</div><div class="sched-wrap">`;
-      past.forEach(x=>{h+=srRow(x,true,scBar,repLabel)});h+='</div>';
-    }
+  const MN2=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const daysInCal=new Date(calYear,calMonth+1,0).getDate();
+  const firstDow=new Date(calYear,calMonth,1).getDay();
+  const firstMon=firstDow===0?6:firstDow-1;
+  const DLH=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const tStr=todayStr();
+  const sStr=selDateStr();
+
+  // Build calendar
+  let calH=`<div class="cal-header">
+    <button class="cal-nav" onclick="calPrev()">‹</button>
+    <div class="cal-month">${MN2[calMonth]} ${calYear}</div>
+    <button class="cal-nav" onclick="calNext()">›</button>
+  </div>
+  <div class="cal-grid-head">${DLH.map(d=>`<span>${d}</span>`).join('')}</div>
+  <div class="cal-grid">`;
+
+  for(let i=0;i<firstMon;i++) calH+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=daysInCal;d++){
+    const ds=dateStr(calYear,calMonth,d);
+    const isToday=ds===tStr;
+    const isSel=ds===sStr;
+    const isFut=ds>tStr;
+    // Check if has events
+    const hasItems=schedule.some(s=>s.sched_date===ds||(s.repeat&&s.repeat!=='none'))||tasks.some(t=>t.task_date===ds);
+    let cls='cal-cell'+(isToday?' today':'')+(isSel?' selected':'')+(isFut?' future':'');
+    calH+=`<div class="${cls}" onclick="selectDay('${ds}')">
+      <div class="c-num">${d}</div>
+      ${hasItems?'<div class="c-dot"></div>':''}
+    </div>`;
   }
-  c.innerHTML=h;
+  calH+='</div>';
+
+  // Selected day content
+  const selD=new Date(sStr+'T00:00:00');
+  const selWD=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+  const selMN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const isSelToday=sStr===tStr;
+  const isSelFuture=sStr>tStr;
+
+  // Get schedule for selected day
+  const dowOfSel=selD.getDay(); // 0=sun
+  const dowMon=dowOfSel===0?6:dowOfSel-1;
+  const isWeekend=dowMon>=5;
+
+  const selSched=[...schedule].filter(s=>{
+    if(s.repeat==='daily') return true;
+    if(s.repeat==='weekdays') return !isWeekend;
+    if(s.repeat==='weekends') return isWeekend;
+    return s.sched_date===sStr;
+  }).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+
+  const selTasks=tasks.filter(t=>t.task_date===sStr).sort((a,b)=>a.priority-b.priority||(a.time||'').localeCompare(b.time||''));
+
+  // Merge and sort all by time
+  const allItems=[
+    ...selSched.map(s=>({...s,_type:'sched'})),
+    ...selTasks.map(t=>({...t,_type:'task',time:t.time||null}))
+  ].sort((a,b)=>{
+    const ta=a.time||'99:99', tb=b.time||'99:99';
+    return ta.localeCompare(tb);
+  });
+
+  let dayH=`<div class="cal-day-title">
+    ${selWD[dowOfSel]}, ${selD.getDate()} ${selMN[selD.getMonth()]}
+    <span onclick="openMForDate('${sStr}')" style="color:var(--gr2);cursor:pointer;font-weight:600">+ Добавить</span>
+  </div>`;
+
+  if(!allItems.length){
+    dayH+=`<div class="empty" style="padding:16px 0"><div class="e-icon" style="font-size:28px">${isSelFuture?'📋':'✨'}</div><div class="e-title" style="font-size:13px">${isSelFuture?'День пока пустой':'Ничего не было'}</div></div>`;
+  } else {
+    dayH+='<div class="sched-wrap">';
+    allItems.forEach(item=>{
+      if(item._type==='sched'){
+        const rep=item.repeat&&item.repeat!=='none'?`<div style="font-size:10px;color:var(--gr2);font-weight:600;margin-top:2px">${repLabel[item.repeat]||''}</div>`:'';
+        const isPastItem=isSelToday&&isPast(item.time);
+        dayH+=`<div class="sr ${isPastItem?'pr':''}">
+          <div class="sr-time ${isPastItem?'pt':''}">${item.time||'—'}</div>
+          <div class="sr-bar ${scBar[item.cat]||'srb-p'}"></div>
+          <div class="sr-info"><div class="sr-name">${item.name}</div>${item.sub?`<div class="sr-sub">${item.sub}</div>`:''}${rep}</div>
+          ${item.repeat&&item.repeat!=='none'?'':`<div class="sr-del" onclick="delS('${item.id}')">✕</div>`}
+        </div>`;
+      } else {
+        const isPastItem=isSelToday&&isPast(item.time);
+        const priColors={1:'#e07070',2:'#e8a45a',3:'#aadd88'};
+        dayH+=`<div class="sr ${isPastItem?'pr':''}${item.done?' faded':''}">
+          <div class="sr-time ${isPastItem?'pt':''}">${item.time||'—'}</div>
+          <div class="sr-bar" style="background:${priColors[item.priority||2]}"></div>
+          <div class="sr-info">
+            <div class="sr-name ${item.done?'x':''}" style="${item.done?'text-decoration:line-through;opacity:.6':''}">✅ ${item.name}</div>
+          </div>
+          <div class="sr-del" onclick="togT('${item.id}')" style="font-size:14px">${item.done?'↩':'✓'}</div>
+        </div>`;
+      }
+    });
+    dayH+='</div>';
+  }
+
+  c.innerHTML=calH+dayH;
 }
+
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}render();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}render();}
+function selectDay(ds){selectedDate=ds;render();}
+function openMForDate(ds){
+  openM();
+  // Store target date
+  window._addForDate=ds;
+}
+
 function srRow(x,p,scBar,repLabel){
   const rep=x.repeat&&x.repeat!=='none'?`<div style="font-size:10px;color:var(--gr2);font-weight:600;margin-top:2px">${repLabel[x.repeat]||''}</div>`:'';
   return `<div class="sr ${p?'pr':''}">
@@ -905,20 +1018,23 @@ async function addIt(){
     const token=localStorage.getItem('sb_token');
     const meRes=await fetch(SUPA_URL+'/auth/v1/user',{headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${token}`}});
     const me=await meRes.json();const uid=me.id;
+    const targetDate=window._addForDate||new Date().toISOString().split('T')[0];
+    window._addForDate=null;
     if(addType==='task'){
       const time=document.getElementById('inp-t').value||null;
       const cat=document.getElementById('inp-cat').value;
       const priority=parseInt(document.getElementById('inp-p').value);
       const goalId=document.getElementById('inp-task-goal').value||null;
-      const body=Object.assign({name,cat,priority,done:false,user_id:uid},time?{time}:{},goalId?{goal_id:goalId}:{});
+      const body=Object.assign({name,cat,priority,done:false,user_id:uid,task_date:targetDate},time?{time}:{},goalId?{goal_id:goalId}:{});
       const res=await api('/rest/v1/tasks',{method:'POST',body:JSON.stringify(body)});
       if(res&&res[0])tasks.push(res[0]);
-      if(time){const sr=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat:'none',user_id:uid})});if(sr&&sr[0])schedule.push(sr[0]);}
+      if(time){const sr=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat:'none',sched_date:targetDate,user_id:uid})});if(sr&&sr[0])schedule.push(sr[0]);}
     } else if(addType==='schedule'){
       const time=document.getElementById('inp-st').value||'09:00';
       const cat=document.getElementById('inp-scat').value;
       const repeat=document.getElementById('inp-repeat').value;
-      const res=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat,user_id:uid})});
+      const schedDate=repeat==='none'?targetDate:null;
+      const res=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify(Object.assign({name,time,sub:'',cat,repeat,user_id:uid},schedDate?{sched_date:schedDate}:{}))});
       if(res&&res[0])schedule.push(res[0]);
     } else if(addType==='habit'){
       const res=await api('/rest/v1/habits',{method:'POST',body:JSON.stringify({name,done_days:[],user_id:uid})});
