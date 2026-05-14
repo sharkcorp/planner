@@ -12,47 +12,64 @@
 <title>Planner for Life</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{--bg:#f2f8ee;--white:#fff;--brd:#deefd6;--gr:#72c25c;--gr2:#4fa843;--grs:#e4f5de;--txt:#2a3825;--mu:#8aa880;--mu2:#5a7854;--rose:#fdeaea;--rose2:#e07070;--sky:#e4f0fb;--sky2:#60a8d8;--peach:#fef0e2;--peach2:#e8965a;--mint:#e2f4ed;--mint2:#52b896;--r:20px}
+:root{--bg:#f2f8ee;--white:#fff;--brd:#deefd6;--gr:#72c25c;--gr2:#4fa843;--grs:#e4f5de;--txt:#2a3825;--mu:#8aa880;--mu2:#5a7854;--rose:#fdeaea;--rose2:#e07070;--sky:#e4f0fb;--sky2:#60a8d8;--peach:#fef0e2;--peach2:#e8965a;--mint:#e2f4ed;--mint2:#52b896;--dark:#1e2d16;--r:18px}
 html,body{height:100%;overflow:hidden;background:var(--bg)}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--txt)}
 .app{max-width:430px;margin:0 auto;background:var(--bg);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+.screen.active{display:flex}
 
 /* AUTH */
-.auth-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
-.auth-logo{width:72px;height:72px;border-radius:24px;background:var(--gr);display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 8px 24px rgba(114,194,92,.35)}
-.auth-logo svg{width:36px;height:36px;fill:#fff}
+.auth-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;overflow-y:auto}
+.auth-logo{width:72px;height:72px;border-radius:24px;background:var(--gr);display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 8px 24px rgba(114,194,92,.35);font-size:36px}
 .auth-title{font-size:26px;font-weight:800;color:var(--txt);margin-bottom:6px;letter-spacing:-.5px}
-.auth-sub{font-size:14px;color:var(--mu);margin-bottom:36px;text-align:center}
+.auth-sub{font-size:14px;color:var(--mu);margin-bottom:32px;text-align:center;line-height:1.5}
 .auth-card{background:var(--white);border-radius:24px;padding:24px;width:100%;border:1.5px solid var(--brd);box-shadow:0 4px 20px rgba(0,0,0,.06)}
 .auth-tabs{display:flex;background:var(--bg);border-radius:12px;padding:3px;margin-bottom:20px}
 .auth-tab{flex:1;padding:8px;border:none;background:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;color:var(--mu);font-family:inherit;transition:all .2s}
 .auth-tab.active{background:var(--white);color:var(--gr2);box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.inp-lbl{font-size:10px;color:var(--mu2);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.lbl{font-size:10px;color:var(--mu2);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
 .inp{width:100%;padding:12px 14px;border:1.5px solid var(--brd);border-radius:14px;font-size:14px;background:var(--bg);color:var(--txt);font-family:inherit;outline:none;margin-bottom:12px;transition:border-color .15s}
 .inp:focus{border-color:var(--gr)}
-.btn-main{width:100%;padding:13px;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--gr);color:#fff;box-shadow:0 4px 16px rgba(114,194,92,.35);transition:opacity .15s;margin-top:4px}
-.btn-main:active{opacity:.85}
-.btn-main:disabled{opacity:.5;cursor:not-allowed}
-.auth-err{font-size:12px;color:var(--rose2);text-align:center;margin-top:10px;min-height:18px;word-break:break-all;padding:8px;background:#fdeaea;border-radius:8px}
+.btn{width:100%;padding:13px;border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--gr);color:#fff;box-shadow:0 4px 16px rgba(114,194,92,.35);transition:opacity .15s}
+.btn:active{opacity:.85}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:var(--bg);border:1.5px solid var(--brd);color:var(--mu);box-shadow:none;margin-top:8px}
+.err{font-size:12px;color:var(--rose2);text-align:center;margin-top:10px;min-height:18px;word-break:break-all;padding:6px 8px;border-radius:8px}
+.err:not(:empty){background:var(--rose)}
 
-/* HEADER */
-.hdr{padding:16px 16px 0;flex-shrink:0}
+/* ONBOARDING */
+.ob-wrap{flex:1;display:flex;flex-direction:column;padding:32px 24px;overflow-y:auto}
+.ob-step{display:none}.ob-step.active{display:flex;flex-direction:column;flex:1}
+.ob-title{font-size:24px;font-weight:800;color:var(--txt);margin-bottom:8px;letter-spacing:-.4px}
+.ob-sub{font-size:14px;color:var(--mu);margin-bottom:28px;line-height:1.5}
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.ob-card{background:var(--white);border:2px solid var(--brd);border-radius:20px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s}
+.ob-card.sel{border-color:var(--gr);background:var(--grs)}
+.ob-card .ob-icon{font-size:32px;margin-bottom:8px}
+.ob-card .ob-lbl{font-size:13px;font-weight:600;color:var(--txt)}
+.ob-progress{display:flex;gap:6px;margin-bottom:28px}
+.ob-dot{flex:1;height:4px;border-radius:2px;background:var(--brd)}
+.ob-dot.done{background:var(--gr)}
+
+/* MAIN LAYOUT */
+.main-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.hdr{padding:14px 16px 0;flex-shrink:0}
 .hdr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .h-greet{font-size:11px;color:var(--mu);margin-bottom:1px}
 .h-name{font-size:20px;font-weight:700;color:var(--txt);letter-spacing:-.4px}
 .h-name span{color:var(--gr2)}
-.hdr-right{display:flex;gap:8px}
-.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--white);border:1.5px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--white);border:1.5px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 
-/* NAV */
+/* NAV TABS */
 .nav{display:flex;background:var(--white);border-radius:16px;margin:0 0 12px;padding:4px;gap:2px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1.5px solid var(--brd)}
 .nb{flex:1;border:none;background:none;padding:7px 2px;cursor:pointer;color:var(--mu);font-family:inherit;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:12px}
-.nb svg{width:20px;height:20px;fill:currentColor}
+.nb-icon{font-size:18px}
 .nb-lbl{font-size:9px;font-weight:600}
 .nb.active{background:var(--grs);color:var(--gr2)}
 
 /* PROGRESS CARD */
-.prog-card{background:#1e2d16;border-radius:var(--r);padding:14px 16px;margin-bottom:12px;box-shadow:0 4px 24px rgba(30,45,22,.25);border:none}
+.prog-card{background:var(--dark);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
 .prog-top{display:flex;align-items:center;gap:14px}
 .ring-wrap{position:relative;width:60px;height:60px;flex-shrink:0}
 .ring-lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -65,9 +82,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .st-n{font-size:15px;font-weight:800}
 .st-l{font-size:9px;margin-top:1px}
 .st.g{background:rgba(197,241,53,.15)}.st.g .st-n{color:#c5f135}.st.g .st-l{color:rgba(255,255,255,.5)}
-.st.r{background:rgba(255,255,255,.1)}.st.r .st-n{color:#fff}.st.r .st-l{color:rgba(255,255,255,.5)}
-.st.s{background:rgba(255,255,255,.08)}.st.s .st-n{color:#fff}.st.s .st-l{color:rgba(255,255,255,.5)}
-.st.p{background:rgba(255,255,255,.08)}.st.p .st-n{color:#fff}.st.p .st-l{color:rgba(255,255,255,.5)}
+.st.r{background:rgba(255,255,255,.1)}.st.r .st-n,.st.r .st-l{color:rgba(255,255,255,.6)}
+.st.s{background:rgba(255,255,255,.08)}.st.s .st-n,.st.s .st-l{color:rgba(255,255,255,.6)}
+.st.p{background:rgba(255,255,255,.08)}.st.p .st-n,.st.p .st-l{color:rgba(255,255,255,.6)}
 
 /* CONTENT */
 .content{flex:1;overflow-y:auto;padding:0 14px 8px;-webkit-overflow-scrolling:touch}
@@ -75,33 +92,55 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .sec-lbl{font-size:10px;color:var(--mu2);letter-spacing:.05em;text-transform:uppercase;font-weight:700}
 .sec-badge{font-size:10px;color:var(--mu);background:var(--white);padding:2px 9px;border-radius:20px;border:1.5px solid var(--brd);font-weight:600}
 
+/* TODAY SCREEN */
+.today-hero{background:var(--dark);border-radius:var(--r);padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+.today-hero::before{content:'';position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(197,241,53,.06);top:-50px;right:-40px}
+.today-date{font-size:11px;color:rgba(255,255,255,.5);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.today-quote{font-size:15px;color:#fff;font-weight:500;line-height:1.5;margin-bottom:14px}
+.today-quote em{color:#c5f135;font-style:normal;font-weight:700}
+.focus-wrap{background:rgba(255,255,255,.08);border-radius:12px;padding:12px}
+.focus-lbl{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600}
+.focus-inp{background:none;border:none;color:#fff;font-size:14px;font-weight:500;width:100%;outline:none;font-family:inherit}
+.focus-inp::placeholder{color:rgba(255,255,255,.3)}
+.today-section{margin-bottom:14px}
+.today-sec-title{font-size:11px;color:var(--mu2);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px}
+.today-task{background:var(--white);border:1.5px solid var(--brd);border-radius:14px;display:flex;align-items:center;gap:10px;padding:11px 12px;margin-bottom:6px}
+.today-chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;background:var(--bg)}
+.today-chk.on{background:var(--gr);border-color:var(--gr)}
+.today-chk.on::after{content:'✓';font-size:11px;color:#fff;font-weight:700}
+.today-task-name{flex:1;font-size:13px;font-weight:500;color:var(--txt)}
+.today-task-name.x{text-decoration:line-through;color:var(--mu)}
+.today-task-time{font-size:11px;color:var(--mu)}
+.today-habit{background:var(--white);border:1.5px solid var(--brd);border-radius:14px;display:flex;align-items:center;gap:10px;padding:11px 12px;margin-bottom:6px}
+.today-hab-name{flex:1;font-size:13px;font-weight:500;color:var(--txt)}
+.today-hab-streak{font-size:11px;color:var(--mu)}
+.today-hab-dot{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--brd);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0}
+.today-hab-dot.on{background:var(--gr);border-color:var(--gr)}
+.evening-btn{width:100%;padding:13px;border:none;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--dark);color:#c5f135;margin-top:4px}
+
 /* TASK */
-.t-card{background:var(--white);border-radius:var(--r);overflow:hidden;margin-bottom:7px;box-shadow:0 2px 12px rgba(0,0,0,.04);border:1.5px solid var(--brd);transition:opacity .25s}
+.t-card{background:var(--white);border-radius:var(--r);overflow:hidden;margin-bottom:7px;border:1.5px solid var(--brd);transition:opacity .25s}
 .t-card.faded{opacity:.45}
 .t-row{display:flex;align-items:stretch}
 .t-strip{width:5px;flex-shrink:0}
 .ts1{background:#e07070}.ts2{background:#e8a45a}.ts3{background:#aadd88}
 .t-body{flex:1;display:flex;align-items:center;gap:9px;padding:12px 10px}
 .t-num{font-size:11px;color:var(--mu);min-width:14px;font-weight:700}
-.chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;background:var(--bg)}
-.chk.on{background:var(--gr);border-color:var(--gr)}
-.chk svg{width:12px;height:12px;fill:#fff;opacity:0;transition:opacity .15s}
-.chk.on svg{opacity:1}
+.chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;background:var(--bg);font-size:12px;color:transparent}
+.chk.on{background:var(--gr);border-color:var(--gr);color:#fff}
 .t-txt{flex:1;min-width:0}
 .t-name{font-size:13px;color:var(--txt);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
 .t-name.x{text-decoration:line-through;color:var(--mu)}
 .t-meta{font-size:11px;color:var(--mu);margin-top:2px;display:flex;align-items:center;gap:3px}
-.t-meta svg{width:11px;height:11px;fill:currentColor}
 .t-meta.past{color:var(--rose2)}
 .t-acts{display:flex;flex-direction:column;gap:2px;padding:6px 8px;justify-content:center}
-.act{width:28px;height:28px;border:none;background:none;cursor:pointer;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--mu);transition:all .15s}
-.act svg{width:14px;height:14px;fill:currentColor}
+.act{width:28px;height:28px;border:none;background:none;cursor:pointer;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--mu);transition:all .15s;font-size:14px}
 .act:hover{background:var(--grs);color:var(--gr2)}
 .act.ghost{opacity:.12;pointer-events:none}
 .act.red:hover{color:var(--rose2);background:var(--rose)}
 
 /* SCHEDULE */
-.sched-wrap{background:var(--white);border:1.5px solid var(--brd);border-radius:var(--r);overflow:hidden;margin-bottom:8px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.sched-wrap{background:var(--white);border:1.5px solid var(--brd);border-radius:var(--r);overflow:hidden;margin-bottom:8px}
 .sr{display:flex;align-items:stretch;border-bottom:1.5px solid var(--bg)}
 .sr:last-child{border-bottom:none}
 .sr.pr{opacity:.45}
@@ -112,53 +151,64 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .sr-info{flex:1;padding:11px 10px}
 .sr-name{font-size:13px;color:var(--txt);font-weight:600}
 .sr-sub{font-size:11px;color:var(--mu);margin-top:2px}
-.sr-del{padding:0 12px;display:flex;align-items:center;cursor:pointer;color:var(--mu)}
-.sr-del svg{width:15px;height:15px;fill:currentColor}
+.sr-del{padding:0 12px;display:flex;align-items:center;cursor:pointer;color:var(--mu);font-size:16px}
 .sr-del:hover{color:var(--rose2)}
 .past-label{font-size:10px;color:var(--rose2);letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin:12px 0 8px}
 
 /* HABITS */
-.h-card{background:var(--white);border:1.5px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:9px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.h-card{background:var(--white);border:1.5px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:9px}
 .h-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .h-info{flex:1;min-width:0}
-.h-name{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
-.h-meta{display:flex;align-items:center;gap:6px}
-.h-streak{font-size:11px;color:var(--mu);display:flex;align-items:center;gap:2px;font-weight:600}
-.h-del{margin-left:auto;width:28px;height:28px;border:none;background:var(--rose);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--rose2);transition:all .15s;flex-shrink:0}
-.h-del svg{width:14px;height:14px;fill:currentColor}
-.h-del:hover{background:var(--rose2);color:#fff}
+.h-name{font-size:13px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.h-meta{display:flex;align-items:center;gap:8px}
+.h-streak-badge{background:#fff3e0;color:#e65100;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.h-del{margin-left:auto;width:28px;height:28px;border:none;background:var(--rose);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--rose2);font-size:14px;flex-shrink:0}
 .h-week{display:flex;gap:4px}
 .h-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .h-day-lbl{font-size:8px;color:var(--mu);font-weight:700}
-.h-dot{width:100%;aspect-ratio:1;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center}
-.h-dot.on{background:var(--gr);border-color:var(--gr)}
-.h-dot.on svg{opacity:1}
-.h-dot:not(.on) svg{opacity:0}
-.h-dot svg{width:10px;height:10px;fill:#fff}
+.h-dot{width:100%;aspect-ratio:1;border-radius:9px;border:1.5px solid var(--brd);background:var(--bg);cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent}
+.h-dot.on{background:var(--gr);border-color:var(--gr);color:#fff}
 .h-dot.today-d{box-shadow:0 0 0 2px var(--gr2)}
 
 /* GOALS */
-.goals-wrap{display:flex;flex-direction:column;gap:8px}
-.goal-row{background:var(--white);border:1.5px solid var(--brd);border-radius:var(--r);display:flex;align-items:center;gap:10px;padding:12px 14px;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:opacity .2s}
+.goal-row{background:var(--white);border:1.5px solid var(--brd);border-radius:var(--r);margin-bottom:8px;overflow:hidden;transition:opacity .2s}
 .goal-row.done-g{opacity:.45}
-.gchk{width:22px;height:22px;border-radius:50%;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;background:var(--bg)}
-.gchk.on{background:var(--gr);border-color:var(--gr)}
-.gchk svg{width:12px;height:12px;fill:#fff;opacity:0;transition:opacity .15s}
-.gchk.on svg{opacity:1}
+.goal-main{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.gchk{width:22px;height:22px;border-radius:50%;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;background:var(--bg);font-size:12px;color:transparent}
+.gchk.on{background:var(--gr);border-color:var(--gr);color:#fff}
 .g-txt{flex:1;min-width:0}
-.g-name{font-size:13px;color:var(--txt);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-name{font-size:13px;color:var(--txt);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .g-name.xg{text-decoration:line-through;color:var(--mu)}
 .g-dl{font-size:10px;color:var(--mu);margin-top:2px}
 .g-dl.urgent{color:var(--rose2);font-weight:700}
-.g-del{width:28px;height:28px;border:none;background:var(--rose);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--rose2);transition:all .15s;flex-shrink:0}
-.g-del svg{width:14px;height:14px;fill:currentColor}
-.g-del:hover{background:var(--rose2);color:#fff}
+.g-del{width:28px;height:28px;border:none;background:var(--rose);border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--rose2);font-size:14px;flex-shrink:0}
+.g-tasks{padding:0 14px 10px;display:flex;flex-direction:column;gap:5px}
+.g-task-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg);border-radius:10px;cursor:pointer}
+.g-task-chk{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--brd);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;color:transparent;background:var(--white)}
+.g-task-chk.on{background:var(--gr);border-color:var(--gr);color:#fff}
+.g-task-name{font-size:12px;color:var(--txt);flex:1}
+.g-task-name.x{text-decoration:line-through;color:var(--mu)}
+.g-add-task{font-size:11px;color:var(--gr2);font-weight:600;padding:5px 0;cursor:pointer;display:flex;align-items:center;gap:4px}
+.g-expand{font-size:12px;color:var(--mu);cursor:pointer;padding:2px 6px;border-radius:8px;background:var(--bg);border:none;font-family:inherit}
+
+/* EVENING MODAL */
+.evening-modal{display:none;position:fixed;inset:0;background:rgba(30,50,25,.4);z-index:200;align-items:flex-end;backdrop-filter:blur(3px)}
+.evening-modal.open{display:flex}
+.evening-sheet{background:var(--white);border-radius:28px 28px 0 0;padding:24px 18px 40px;width:100%;max-width:430px;margin:0 auto}
+.ev-handle{width:36px;height:4px;background:var(--brd);border-radius:2px;margin:0 auto 20px}
+.ev-title{font-size:20px;font-weight:800;color:var(--txt);margin-bottom:6px}
+.ev-sub{font-size:13px;color:var(--mu);margin-bottom:20px}
+.rating-row{display:flex;gap:8px;margin-bottom:20px}
+.rating-btn{flex:1;padding:10px 4px;border:1.5px solid var(--brd);border-radius:14px;background:none;cursor:pointer;font-size:10px;font-weight:700;color:var(--mu);font-family:inherit;transition:all .2s;text-align:center}
+.rating-btn .r-icon{font-size:20px;display:block;margin-bottom:4px}
+.rating-btn.sel{border-color:var(--gr);background:var(--grs);color:var(--gr2)}
+.ev-textarea{width:100%;padding:12px 14px;border:1.5px solid var(--brd);border-radius:14px;font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;outline:none;resize:none;height:80px;margin-bottom:12px}
+.ev-textarea:focus{border-color:var(--gr)}
 
 /* FAB */
-.fab-row{padding:4px 12px 8px;display:flex;justify-content:flex-end;flex-shrink:0}
-.fab{width:46px;height:46px;border-radius:14px;background:var(--gr);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;box-shadow:0 4px 16px rgba(114,194,92,.4)}
+.fab-row{padding:4px 12px 10px;display:flex;justify-content:flex-end;flex-shrink:0}
+.fab{width:46px;height:46px;border-radius:14px;background:var(--gr);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(114,194,92,.4);font-size:26px;color:#fff;font-weight:300;line-height:1}
 .fab:active{transform:scale(.93)}
-.fab svg{width:22px;height:22px;fill:#fff}
 
 /* SHEET */
 .ov{display:none;position:fixed;inset:0;background:rgba(30,50,25,.35);align-items:flex-end;z-index:100;backdrop-filter:blur(2px)}
@@ -175,107 +225,147 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .sh-ok{width:100%;padding:13px;border:none;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--gr);color:#fff;box-shadow:0 4px 16px rgba(114,194,92,.35)}
 .sh-no{width:100%;padding:12px;background:var(--bg);border:1.5px solid var(--brd);border-radius:16px;font-size:13px;cursor:pointer;color:var(--mu);font-family:inherit;margin-top:8px;font-weight:600}
 .empty{text-align:center;padding:32px 0;color:var(--mu);font-size:13px}
-.empty svg{width:32px;height:32px;fill:var(--brd);display:block;margin:0 auto 10px}
-.empty a{color:var(--gr2);text-decoration:none;font-weight:600}
-.loading{text-align:center;padding:32px 0;color:var(--mu);font-size:13px}
-.spin{display:inline-block;width:24px;height:24px;border:3px solid var(--brd);border-top-color:var(--gr);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px}
+.empty .e-icon{font-size:40px;margin-bottom:12px}
+.empty .e-title{font-size:15px;font-weight:700;color:var(--txt);margin-bottom:6px}
+.spin{display:inline-block;width:24px;height:24px;border:3px solid var(--brd);border-top-color:var(--gr);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.loading{text-align:center;padding:32px 0;color:var(--mu)}
 </style>
 </head>
 <body>
-<div class="app" id="app">
-  <!-- AUTH -->
-  <div class="auth-screen" id="auth-screen">
-    <div class="auth-logo">
-      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-    </div>
-    <div class="auth-title">Planner for Life</div>
-    <div class="auth-sub">Твой личный ежедневник с задачами, привычками и целями</div>
-    <div class="auth-card">
-      <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchAuth('login')">Войти</button>
-        <button class="auth-tab" onclick="switchAuth('register')">Регистрация</button>
+<div class="app">
+
+  <!-- AUTH SCREEN -->
+  <div class="screen active" id="s-auth">
+    <div class="auth-wrap">
+      <div class="auth-logo">📋</div>
+      <div class="auth-title">Planner for Life</div>
+      <div class="auth-sub">Управляй днём, строй привычки,<br>достигай целей</div>
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchAuth('login')">Войти</button>
+          <button class="auth-tab" onclick="switchAuth('register')">Регистрация</button>
+        </div>
+        <div class="lbl">Email</div>
+        <input class="inp" type="email" id="auth-email" placeholder="example@mail.com"/>
+        <div class="lbl">Пароль</div>
+        <input class="inp" type="password" id="auth-pass" placeholder="••••••••" style="margin-bottom:4px"/>
+        <button class="btn" id="auth-btn" onclick="doAuth()">Войти</button>
+        <div class="err" id="auth-err"></div>
       </div>
-      <div class="inp-lbl">Email</div>
-      <input class="inp" type="email" id="auth-email" placeholder="example@mail.com"/>
-      <div class="inp-lbl">Пароль</div>
-      <input class="inp" type="password" id="auth-pass" placeholder="••••••••" style="margin-bottom:4px"/>
-      <button class="btn-main" id="auth-btn" onclick="doAuth()">Войти</button>
-      <div class="auth-err" id="auth-err"></div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING SCREEN -->
+  <div class="screen" id="s-onboard">
+    <div class="ob-wrap">
+      <div class="ob-step active" id="ob-0">
+        <div style="font-size:48px;margin-bottom:16px">👋</div>
+        <div class="ob-title">Привет! Давай настроим твой планировщик</div>
+        <div class="ob-sub">Несколько вопросов чтобы сделать приложение полезным именно для тебя</div>
+        <div class="ob-progress"><div class="ob-dot done"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+        <div style="margin-bottom:12px"><div class="lbl">Как тебя зовут?</div><input class="inp" id="ob-name" placeholder="Твоё имя"/></div>
+        <button class="btn" onclick="obNext(1)">Далее →</button>
+      </div>
+      <div class="ob-step" id="ob-1">
+        <div style="font-size:48px;margin-bottom:16px">🎯</div>
+        <div class="ob-title">Что хочешь улучшить?</div>
+        <div class="ob-sub">Выбери одно или несколько направлений</div>
+        <div class="ob-progress"><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot"></div></div>
+        <div class="ob-grid">
+          <div class="ob-card" onclick="toggleOb(this,'work')"><div class="ob-icon">💼</div><div class="ob-lbl">Работа и карьера</div></div>
+          <div class="ob-card" onclick="toggleOb(this,'health')"><div class="ob-icon">💪</div><div class="ob-lbl">Здоровье и спорт</div></div>
+          <div class="ob-card" onclick="toggleOb(this,'money')"><div class="ob-icon">💰</div><div class="ob-lbl">Деньги и финансы</div></div>
+          <div class="ob-card" onclick="toggleOb(this,'family')"><div class="ob-icon">👨‍👩‍👧</div><div class="ob-lbl">Семья и отношения</div></div>
+          <div class="ob-card" onclick="toggleOb(this,'learn')"><div class="ob-icon">📚</div><div class="ob-lbl">Обучение и рост</div></div>
+          <div class="ob-card" onclick="toggleOb(this,'habits')"><div class="ob-icon">🔥</div><div class="ob-lbl">Привычки и режим</div></div>
+        </div>
+        <button class="btn" onclick="obNext(2)">Далее →</button>
+      </div>
+      <div class="ob-step" id="ob-2">
+        <div style="font-size:48px;margin-bottom:16px">⏰</div>
+        <div class="ob-title">Когда обычно встаёшь?</div>
+        <div class="ob-sub">Поможем настроить фиксированное расписание</div>
+        <div class="ob-progress"><div class="ob-dot done"></div><div class="ob-dot done"></div><div class="ob-dot done"></div></div>
+        <div style="margin-bottom:12px">
+          <div class="lbl">Время подъёма</div>
+          <input class="inp" type="time" id="ob-wake" value="08:00"/>
+        </div>
+        <div style="margin-bottom:20px">
+          <div class="lbl">Время отбоя</div>
+          <input class="inp" type="time" id="ob-sleep" value="23:00"/>
+        </div>
+        <button class="btn" id="ob-finish-btn" onclick="finishOnboard()">Начать планировать 🚀</button>
+      </div>
     </div>
   </div>
 
   <!-- MAIN APP -->
-  <div id="main-app" style="display:none;flex-direction:column;flex:1;overflow:hidden">
-    <div class="hdr">
-      <div class="hdr-top">
-        <div>
-          <div class="h-greet" id="hday"></div>
-          <div class="h-name">Привет, <span id="uname">👋</span></div>
+  <div class="screen" id="s-main">
+    <div class="main-wrap">
+      <div class="hdr">
+        <div class="hdr-top">
+          <div>
+            <div class="h-greet" id="hday"></div>
+            <div class="h-name">Привет, <span id="uname">👋</span></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <div class="icon-btn" onclick="openEvening()" title="Итог дня">🌙</div>
+            <div class="icon-btn" onclick="doLogout()" title="Выйти">→</div>
+          </div>
         </div>
-        <div class="hdr-right">
-          <div class="icon-btn" onclick="doLogout()" title="Выйти">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <div class="nav">
+          <button class="nb active" onclick="sw('today')"><span class="nb-icon">🌟</span><span class="nb-lbl">Сегодня</span></button>
+          <button class="nb" onclick="sw('schedule')"><span class="nb-icon">📅</span><span class="nb-lbl">Расписание</span></button>
+          <button class="nb" onclick="sw('tasks')"><span class="nb-icon">✅</span><span class="nb-lbl">Задачи</span></button>
+          <button class="nb" onclick="sw('habits')"><span class="nb-icon">🔥</span><span class="nb-lbl">Привычки</span></button>
+          <button class="nb" onclick="sw('goals')"><span class="nb-icon">🏆</span><span class="nb-lbl">Цели</span></button>
+        </div>
+        <div class="prog-card">
+          <div class="prog-top">
+            <div class="ring-wrap">
+              <svg width="60" height="60" viewBox="0 0 60 60" style="transform:rotate(-90deg);position:absolute;top:0;left:0">
+                <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="6"/>
+                <circle cx="30" cy="30" r="24" fill="none" stroke="#c5f135" stroke-width="6" stroke-linecap="round" id="prog-ring" stroke-dasharray="0 150.8"/>
+              </svg>
+              <div class="ring-lbl"><div class="ring-pct" id="ppct">0%</div><div class="ring-day">день</div></div>
+            </div>
+            <div class="prog-info">
+              <div class="pt">Мой план на сегодня</div>
+              <div class="ps" id="ppct2">загрузка...</div>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="st g"><div class="st-n" id="st0">0</div><div class="st-l">осталось</div></div>
+            <div class="st r"><div class="st-n" id="st1">0</div><div class="st-l">готово</div></div>
+            <div class="st s"><div class="st-n" id="st2">0</div><div class="st-l">привычек</div></div>
+            <div class="st p"><div class="st-n" id="st3">0/0</div><div class="st-l">цели</div></div>
           </div>
         </div>
       </div>
-      <div class="nav">
-        <button class="nb active" onclick="sw('schedule')">
-          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span class="nb-lbl">Расписание</span>
-        </button>
-        <button class="nb" onclick="sw('tasks')">
-          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-          <span class="nb-lbl">Задачи</span>
-        </button>
-        <button class="nb" onclick="sw('habits')">
-          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-          <span class="nb-lbl">Привычки</span>
-        </button>
-        <button class="nb" onclick="sw('goals')">
-          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          <span class="nb-lbl">Цели</span>
-        </button>
-      </div>
-      <div class="prog-card">
-        <div class="prog-top">
-          <div class="ring-wrap">
-            <svg width="60" height="60" viewBox="0 0 60 60" style="transform:rotate(-90deg);position:absolute;top:0;left:0">
-              <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="6"/>
-              <circle cx="30" cy="30" r="24" fill="none" stroke="#c5f135" stroke-width="6" stroke-linecap="round" id="prog-ring" stroke-dasharray="0 150.8"/>
-            </svg>
-            <div class="ring-lbl"><div class="ring-pct" id="ppct">0%</div><div class="ring-day">день</div></div>
-          </div>
-          <div class="prog-info">
-            <div class="pt">Мой план на сегодня</div>
-            <div class="ps" id="ppct2">загрузка...</div>
-          </div>
-        </div>
-        <div class="stats-row">
-          <div class="st g"><div class="st-n" id="st0">0</div><div class="st-l">осталось</div></div>
-          <div class="st r"><div class="st-n" id="st1">0</div><div class="st-l">готово</div></div>
-          <div class="st s"><div class="st-n" id="st2">0</div><div class="st-l">привычек</div></div>
-          <div class="st p"><div class="st-n" id="st3">0/0</div><div class="st-l">цели</div></div>
-        </div>
-      </div>
-    </div>
-    <div class="content" id="mc"></div>
-    <div class="fab-row">
-      <button class="fab" onclick="openM()" style="font-size:28px;font-weight:300;color:#fff;line-height:1">+</button>
+      <div class="content" id="mc"></div>
+      <div class="fab-row"><button class="fab" onclick="openM()">+</button></div>
     </div>
   </div>
 </div>
 
-<!-- SHEET -->
+<!-- ADD SHEET -->
 <div class="ov" id="ov" onclick="if(event.target===this)closeM()">
   <div class="sheet">
     <div class="sh-handle"></div>
-    <div class="sh-h" id="sh-title">Новая задача</div>
+    <div class="sh-h" id="sh-title">Добавить</div>
+    <!-- Type selector -->
+    <div id="type-sel" style="display:flex;gap:8px;margin-bottom:16px">
+      <button onclick="setAddType('task')" id="type-task" style="flex:1;padding:8px 4px;border:1.5px solid var(--brd);border-radius:12px;background:none;font-size:12px;font-weight:600;cursor:pointer;color:var(--mu);font-family:inherit;transition:all .2s">✅ Задача</button>
+      <button onclick="setAddType('habit')" id="type-habit" style="flex:1;padding:8px 4px;border:1.5px solid var(--brd);border-radius:12px;background:none;font-size:12px;font-weight:600;cursor:pointer;color:var(--mu);font-family:inherit;transition:all .2s">🔥 Привычка</button>
+      <button onclick="setAddType('goal')" id="type-goal" style="flex:1;padding:8px 4px;border:1.5px solid var(--brd);border-radius:12px;background:none;font-size:12px;font-weight:600;cursor:pointer;color:var(--mu);font-family:inherit;transition:all .2s">🏆 Цель</button>
+      <button onclick="setAddType('schedule')" id="type-schedule" style="flex:1;padding:8px 4px;border:1.5px solid var(--brd);border-radius:12px;background:none;font-size:12px;font-weight:600;cursor:pointer;color:var(--mu);font-family:inherit;transition:all .2s">📅 Блок</button>
+    </div>
     <div class="sh-lbl">Название</div>
     <input class="sh-inp" type="text" id="inp-n" placeholder="Введите название"/>
     <div id="task-fields">
       <div class="sh-row">
-        <div><div class="sh-lbl">Время</div><input class="sh-inp" type="time" id="inp-t"/></div>
+        <div><div class="sh-lbl">Время (необязательно)</div><input class="sh-inp" type="time" id="inp-t"/></div>
         <div><div class="sh-lbl">Категория</div>
           <select class="sh-inp" id="inp-cat">
             <option value="work">Работа</option>
@@ -292,21 +382,63 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
         </select>
       </div>
     </div>
-    <div id="sched-repeat" style="display:none">
-      <div class="sh-lbl">Повтор</div>
-      <select class="sh-inp" id="inp-repeat">
-        <option value="none">Один раз</option>
-        <option value="daily">Каждый день 🔁</option>
-        <option value="weekdays">По будням</option>
-        <option value="weekends">По выходным</option>
+    <div id="sched-fields" style="display:none">
+      <div class="sh-row">
+        <div><div class="sh-lbl">Время</div><input class="sh-inp" type="time" id="inp-st"/></div>
+        <div><div class="sh-lbl">Повтор</div>
+          <select class="sh-inp" id="inp-repeat">
+            <option value="none">Один раз</option>
+            <option value="daily">🔁 Каждый день</option>
+            <option value="weekdays">По будням</option>
+            <option value="weekends">По выходным</option>
+          </select>
+        </div>
+      </div>
+      <div class="sh-lbl">Категория</div>
+      <select class="sh-inp" id="inp-scat">
+        <option value="work">Работа</option>
+        <option value="health">Здоровье</option>
+        <option value="personal">Личное</option>
       </select>
     </div>
     <div id="goal-fields" style="display:none">
       <div class="sh-lbl">Дедлайн (число месяца)</div>
       <input class="sh-inp" type="number" id="inp-deadline" min="1" max="31" placeholder="31"/>
+      <div class="sh-lbl">Связать с целью (необязательно)</div>
+      <select class="sh-inp" id="inp-goal-link">
+        <option value="">— без привязки —</option>
+      </select>
+    </div>
+    <div id="goal-link-field" style="display:none">
+      <div class="sh-lbl">Привязать к цели (необязательно)</div>
+      <select class="sh-inp" id="inp-task-goal">
+        <option value="">— без привязки —</option>
+      </select>
     </div>
     <button class="sh-ok" id="sh-ok-btn" onclick="addIt()">Добавить</button>
     <button class="sh-no" onclick="closeM()">Отмена</button>
+  </div>
+</div>
+
+<!-- EVENING MODAL -->
+<div class="evening-modal" id="ev-modal" onclick="if(event.target===this)closeEvening()">
+  <div class="evening-sheet">
+    <div class="ev-handle"></div>
+    <div class="ev-title">🌙 Итог дня</div>
+    <div class="ev-sub">Как прошёл день?</div>
+    <div class="rating-row">
+      <button class="rating-btn" onclick="setRating(1)"><span class="r-icon">😞</span>Плохо</button>
+      <button class="rating-btn" onclick="setRating(2)"><span class="r-icon">😐</span>Норм</button>
+      <button class="rating-btn" onclick="setRating(3)"><span class="r-icon">🙂</span>Хорошо</button>
+      <button class="rating-btn" onclick="setRating(4)"><span class="r-icon">😊</span>Отлично</button>
+      <button class="rating-btn" onclick="setRating(5)"><span class="r-icon">🤩</span>Супер!</button>
+    </div>
+    <div class="sh-lbl">Что сделал сегодня?</div>
+    <textarea class="ev-textarea" id="ev-done" placeholder="Главные достижения дня..."></textarea>
+    <div class="sh-lbl">Что переносим на завтра?</div>
+    <textarea class="ev-textarea" id="ev-tomorrow" placeholder="Незавершённые задачи..."></textarea>
+    <button class="btn" onclick="saveEvening()" style="margin-top:4px">Сохранить итог</button>
+    <button class="btn btn-ghost" onclick="closeEvening()">Закрыть</button>
   </div>
 </div>
 
@@ -317,41 +449,36 @@ const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 const api = async (path, opts={}) => {
   const token = localStorage.getItem('sb_token');
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+  const timeout = setTimeout(() => controller.abort(), 10000);
   try {
     const res = await fetch(SUPA_URL + path, {
       headers: {'apikey': SUPA_KEY, 'Authorization': `Bearer ${token||SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...opts.headers},
-      signal: controller.signal,
-      ...opts
+      signal: controller.signal, ...opts
     });
     clearTimeout(timeout);
-    if (!res.ok && res.status !== 204) { const e = await res.json().catch(()=>({message:res.statusText})); throw new Error(e.message||e.error_description||'Ошибка'); }
+    if (!res.ok && res.status !== 204) { const e = await res.json().catch(()=>({message:res.statusText})); throw new Error(e.message||'Ошибка'); }
     return res.status === 204 ? null : res.json().catch(()=>null);
-  } catch(e) {
-    clearTimeout(timeout);
-    if (e.name === 'AbortError') throw new Error('Превышено время ожидания');
-    throw e;
-  }
+  } catch(e) { clearTimeout(timeout); if(e.name==='AbortError') throw new Error('Нет соединения'); throw e; }
 };
 
 const authApi = async (path, body) => {
   const res = await fetch(SUPA_URL + '/auth/v1' + path, {
-    method: 'POST',
-    headers: {
-      'apikey': SUPA_KEY,
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + SUPA_KEY
-    },
+    method: 'POST', headers: {'apikey': SUPA_KEY, 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY},
     body: JSON.stringify(body)
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error_description || data.error || data.msg || 'Ошибка сервера');
+  if (!res.ok) throw new Error(data.error_description || data.error || 'Ошибка');
   return data;
 };
 
-let userId = null;
-let authMode = 'login';
+// SCREEN MANAGEMENT
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
+// AUTH
+let authMode = 'login';
 function switchAuth(mode) {
   authMode = mode;
   document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', i===(mode==='login'?0:1)));
@@ -369,83 +496,125 @@ async function doAuth() {
     const path = authMode === 'login' ? '/token?grant_type=password' : '/signup';
     const data = await authApi(path, {email, password: pass});
     const token = data.access_token || (data.session && data.session.access_token);
-    if (!token) {
-      document.getElementById('auth-err').textContent = 'Проверь email — нужно подтвердить регистрацию';
-      btn.disabled = false; btn.textContent = 'Зарегистрироваться'; return;
-    }
+    if (!token) { document.getElementById('auth-err').textContent = 'Проверь email для подтверждения'; btn.disabled=false; btn.textContent='Зарегистрироваться'; return; }
     localStorage.setItem('sb_token', token);
     localStorage.setItem('sb_email', email);
-    startApp(email);
+    if (authMode === 'register') {
+      showScreen('s-onboard');
+    } else {
+      startApp(email);
+    }
   } catch(e) {
-    document.getElementById('auth-err').textContent = 'Ошибка: ' + (e.message || JSON.stringify(e));
+    document.getElementById('auth-err').textContent = e.message;
     btn.disabled = false; btn.textContent = authMode === 'login' ? 'Войти' : 'Зарегистрироваться';
   }
 }
 
 function doLogout() {
-  localStorage.removeItem('sb_token');
-  localStorage.removeItem('sb_email');
-  document.getElementById('auth-screen').style.display = 'flex';
-  document.getElementById('main-app').style.display = 'none';
+  localStorage.clear();
+  showScreen('s-auth');
 }
 
-function startApp(email) {
-  document.getElementById('auth-screen').style.display = 'none';
-  const ma = document.getElementById('main-app');
-  ma.style.display = 'flex';
-  const name = email.split('@')[0];
-  document.getElementById('uname').textContent = name + ' 👋';
-  const now = new Date();
-  const WD=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
-  const MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  document.getElementById('hday').textContent = WD[now.getDay()] + ', ' + now.getDate() + ' ' + MN[now.getMonth()];
-  loadAll();
+// ONBOARDING
+let obSelections = [];
+function toggleOb(el, val) {
+  el.classList.toggle('sel');
+  if (obSelections.includes(val)) obSelections = obSelections.filter(v=>v!==val);
+  else obSelections.push(val);
 }
 
-// Check existing session
-const existingToken = localStorage.getItem('sb_token');
-const existingEmail = localStorage.getItem('sb_email');
-if (existingToken && existingEmail) {
-  startApp(existingEmail);
-} else {
-  document.getElementById('auth-screen').style.display = 'flex';
+function obNext(step) {
+  if (step === 1) {
+    const name = document.getElementById('ob-name').value.trim();
+    if (!name) { alert('Введи имя'); return; }
+    localStorage.setItem('user_name', name);
+  }
+  document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('ob-'+step).classList.add('active');
 }
 
+async function finishOnboard() {
+  const btn = document.getElementById('ob-finish-btn');
+  btn.disabled = true; btn.textContent = '...';
+  const wake = document.getElementById('ob-wake').value;
+  const sleep = document.getElementById('ob-sleep').value;
+  localStorage.setItem('ob_done', '1');
+  localStorage.setItem('ob_focus', obSelections.join(','));
+  // Add wake/sleep as recurring schedule
+  try {
+    const token = localStorage.getItem('sb_token');
+    const meRes = await fetch(SUPA_URL+'/auth/v1/user', {headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${token}`}});
+    const me = await meRes.json();
+    const uid = me.id;
+    if (wake) await api('/rest/v1/schedule', {method:'POST', body:JSON.stringify({name:'🌅 Подъём', time:wake, sub:'', cat:'personal', repeat:'daily', user_id:uid})});
+    if (sleep) await api('/rest/v1/schedule', {method:'POST', body:JSON.stringify({name:'🌙 Отбой', time:sleep, sub:'', cat:'personal', repeat:'daily', user_id:uid})});
+  } catch(e) {}
+  startApp(localStorage.getItem('sb_email'));
+}
+
+// APP
 const now = new Date();
 const todayH = now.getHours()*60+now.getMinutes();
 const todayD = now.getDate();
 const todayDow = now.getDay()===0?6:now.getDay()-1;
 const daysInMonth = new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-const MN2=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const WD=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+const MN=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const DL=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const QUOTES = [
+  'Каждый день — шанс стать лучше вчерашнего.',
+  'Маленькие шаги каждый день = большие результаты.',
+  'Фокус на том, что можешь контролировать.',
+  'Один выполненный план лучше десяти задуманных.',
+  'Дисциплина — это форма любви к себе.',
+  'Сначала сделай, потом оценишь.',
+];
 
-let tab='schedule';
+let tab = 'today';
 let tasks=[], schedule=[], habits=[], goals=[];
+let currentUserId = null;
+
+function startApp(email) {
+  showScreen('s-main');
+  const name = localStorage.getItem('user_name') || email.split('@')[0];
+  document.getElementById('uname').textContent = name + ' 👋';
+  document.getElementById('hday').textContent = WD[now.getDay()] + ', ' + now.getDate() + ' ' + MN[now.getMonth()];
+  loadAll();
+}
+
+// Check session
+const existingToken = localStorage.getItem('sb_token');
+const existingEmail = localStorage.getItem('sb_email');
+if (existingToken && existingEmail) {
+  if (localStorage.getItem('ob_done')) startApp(existingEmail);
+  else showScreen('s-onboard');
+}
 
 async function loadAll() {
-  document.getElementById('mc').innerHTML = '<div class="loading"><div class="spin"></div><br>Загрузка...</div>';
+  document.getElementById('mc').innerHTML = '<div class="loading"><div class="spin"></div></div>';
   let retries = 3;
   while (retries > 0) {
     try {
+      const token = localStorage.getItem('sb_token');
+      const meRes = await fetch(SUPA_URL+'/auth/v1/user', {headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${token}`}});
+      const me = await meRes.json();
+      currentUserId = me.id;
       const [t,s,h,g] = await Promise.all([
-        api('/rest/v1/tasks?order=created_at'),
+        api('/rest/v1/tasks?order=priority,created_at'),
         api('/rest/v1/schedule?order=time'),
         api('/rest/v1/habits?order=created_at'),
         api('/rest/v1/goals?order=created_at'),
       ]);
-      tasks = (t||[]).map(x=>({...x, done_days: undefined}));
+      tasks = t||[];
       schedule = s||[];
-      habits = (h||[]).map(x=>({...x, done: new Set(x.done_days||[])}));
+      habits = (h||[]).map(x=>({...x, done:new Set(x.done_days||[])}));
       goals = g||[];
-      render();
-      return;
+      render(); return;
     } catch(e) {
       retries--;
       if (retries === 0) {
-        document.getElementById('mc').innerHTML = '<div class="empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Нет соединения — <a href="#" onclick="loadAll()" style="color:#72c25c">повторить</a></div>';
-      } else {
-        await new Promise(r => setTimeout(r, 1000));
-      }
+        document.getElementById('mc').innerHTML = '<div class="empty"><div class="e-icon">📡</div><div class="e-title">Нет соединения</div><a href="#" onclick="loadAll()" style="color:var(--gr2);font-weight:600">Повторить</a></div>';
+      } else await new Promise(r=>setTimeout(r,1500));
     }
   }
 }
@@ -463,33 +632,86 @@ function upStats() {
   document.getElementById('prog-ring').setAttribute('stroke-dasharray',`${circ*pct/100} ${circ}`);
 }
 
-function sw(t){tab=t;document.querySelectorAll('.nb').forEach((b,i)=>{b.classList.toggle('active',['schedule','tasks','habits','goals'][i]===t)});render();}
+function sw(t) {
+  tab=t;
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('active',['today','schedule','tasks','habits','goals'][i]===t));
+  render();
+}
 
-function getSorted(){return [...tasks.filter(t=>!t.done)].sort((a,b)=>a.priority-b.priority||a.time.localeCompare(b.time));}
+function getSorted() {
+  return [...tasks.filter(t=>!t.done)].sort((a,b)=>a.priority-b.priority||(a.time||'').localeCompare(b.time||''));
+}
 
-function render(){upStats();const c=document.getElementById('mc');
-  if(tab==='tasks') rTasks(c);
+function timeToMin(t){if(!t)return 9999;const[h,m]=t.split(':').map(Number);return h*60+m;}
+function isPast(t){return t&&timeToMin(t)<todayH;}
+
+function render() {
+  upStats();
+  const c=document.getElementById('mc');
+  if(tab==='today') rToday(c);
   else if(tab==='schedule') rSched(c);
+  else if(tab==='tasks') rTasks(c);
   else if(tab==='habits') rHabits(c);
   else rGoals(c);
 }
 
-const ico = {
-  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>',
-  clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>',
-  dn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>',
-  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>',
-  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-};
+// TODAY SCREEN
+const todayFocus = localStorage.getItem('today_focus_'+todayD)||'';
+function rToday(c) {
+  const quote = QUOTES[todayD % QUOTES.length];
+  const pendingTasks = getSorted().slice(0,5);
+  const todayHabits = habits.slice(0,4);
+  let h = `<div class="today-hero">
+    <div class="today-date">${WD[now.getDay()]}, ${now.getDate()} ${MN[now.getMonth()]}</div>
+    <div class="today-quote"><em>«</em>${quote}<em>»</em></div>
+    <div class="focus-wrap">
+      <div class="focus-lbl">🎯 Фокус дня</div>
+      <input class="focus-inp" id="focus-inp" placeholder="Главная задача на сегодня..." value="${todayFocus}" onchange="saveFocus(this.value)"/>
+    </div>
+  </div>`;
 
-function timeToMin(t){const[h,m]=t.split(':').map(Number);return h*60+m;}
-function isPast(t){return timeToMin(t)<todayH;}
+  // Tasks preview
+  if(pendingTasks.length) {
+    h+=`<div class="today-section"><div class="today-sec-title">📋 Задачи на сегодня</div>`;
+    pendingTasks.forEach(t=>{
+      h+=`<div class="today-task">
+        <div class="today-chk ${t.done?'on':''}" onclick="togT('${t.id}')"></div>
+        <div class="today-task-name ${t.done?'x':''}">${t.name}</div>
+        ${t.time?`<div class="today-task-time">${t.time}</div>`:''}
+      </div>`;
+    });
+    if(tasks.filter(t=>!t.done).length>5) h+=`<div style="text-align:center;font-size:12px;color:var(--mu);padding:6px 0;cursor:pointer" onclick="sw('tasks')">+ ещё ${tasks.filter(t=>!t.done).length-5} задач →</div>`;
+    h+='</div>';
+  } else {
+    h+=`<div class="today-section"><div class="today-sec-title">📋 Задачи</div><div class="empty" style="padding:16px 0"><div class="e-icon" style="font-size:28px">✨</div><div class="e-title" style="font-size:13px">День свободен!</div></div></div>`;
+  }
 
-function rTasks(c){
-  const pend=getSorted(),done=tasks.filter(t=>t.done);
+  // Habits preview
+  if(todayHabits.length) {
+    h+=`<div class="today-section"><div class="today-sec-title">🔥 Привычки сегодня</div>`;
+    todayHabits.forEach(h2=>{
+      const isDone=h2.done.has(todayD);
+      let streak=0;for(let d=todayD;d>=1;d--){if(h2.done.has(d))streak++;else break;}
+      h+=`<div class="today-habit">
+        <div class="today-hab-dot ${isDone?'on':''}" onclick="togDay('${h2.id}',${todayD})">${isDone?'✓':''}</div>
+        <div class="today-hab-name">${h2.name}</div>
+        <div class="today-hab-streak">${streak>0?'🔥'+streak:''}</div>
+      </div>`;
+    });
+    h+='</div>';
+  }
+
+  h+=`<button class="evening-btn" onclick="openEvening()">🌙 Подвести итог дня</button>`;
+  c.innerHTML=h;
+}
+
+function saveFocus(val){localStorage.setItem('today_focus_'+todayD, val);}
+
+// TASKS
+function rTasks(c) {
+  const pend=getSorted(), done=tasks.filter(t=>t.done);
   let h='';
-  if(!tasks.length){h=`<div class="empty"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Нет задач — добавь первую</div>`;}
+  if(!tasks.length){h='<div class="empty"><div class="e-icon">✨</div><div class="e-title">День свободен!</div><div>Добавь первую задачу</div></div>';}
   else{
     if(pend.length){h+=`<div class="sec-hd"><span class="sec-lbl">На сегодня</span><span class="sec-badge">${pend.length}</span></div>`;pend.forEach((t,i)=>{h+=tCard(t,i+1,pend.length,false)});}
     if(done.length){h+=`<div class="sec-hd" style="margin-top:12px"><span class="sec-lbl">Выполнено</span><span class="sec-badge">${done.length}</span></div>`;done.forEach((t,i)=>{h+=tCard(t,i+1,done.length,true)});}
@@ -500,17 +722,17 @@ function rTasks(c){
 function tCard(t,num,total,isDone){
   const past=!isDone&&isPast(t.time);
   const priSt={1:'ts1',2:'ts2',3:'ts3'};
-  const u=(!isDone&&num>1)?`<button class="act" onclick="mv('${t.id}',-1)">${ico.up}</button>`:`<button class="act ghost">${ico.up}</button>`;
-  const d=(!isDone&&num<total)?`<button class="act" onclick="mv('${t.id}',1)">${ico.dn}</button>`:`<button class="act ghost">${ico.dn}</button>`;
-  const del=`<button class="act red" onclick="delT('${t.id}')">${ico.trash}</button>`;
+  const u=(!isDone&&num>1)?`<button class="act" onclick="mv('${t.id}',-1)">↑</button>`:`<button class="act ghost">↑</button>`;
+  const d=(!isDone&&num<total)?`<button class="act" onclick="mv('${t.id}',1)">↓</button>`:`<button class="act ghost">↓</button>`;
+  const del=`<button class="act red" onclick="delT('${t.id}')">🗑</button>`;
   return `<div class="t-card ${isDone?'faded':''}"><div class="t-row">
-    <div class="t-strip ${isDone?'ts3':priSt[t.priority]}"></div>
+    <div class="t-strip ${isDone?'ts3':priSt[t.priority||2]}"></div>
     <div class="t-body">
       <span class="t-num">${num}</span>
-      <div class="chk ${t.done?'on':''}" onclick="togT('${t.id}')">${ico.check}</div>
+      <div class="chk ${t.done?'on':''}" onclick="togT('${t.id}')">${t.done?'✓':''}</div>
       <div class="t-txt">
         <div class="t-name ${t.done?'x':''}">${t.name}</div>
-        <div class="t-meta ${past?'past':''}">${t.time ? ico.clock+t.time+(past?' · просрочена':'') : '<span style="color:var(--mu);font-size:10px">без времени</span>'}</div>
+        <div class="t-meta ${past?'past':''}">${t.time?'⏰ '+t.time+(past?' · просрочена':''):'<span style="font-size:10px;color:var(--mu)">без времени</span>'}</div>
       </div>
     </div>
     <div class="t-acts">${u}${d}${del}</div>
@@ -518,188 +740,219 @@ function tCard(t,num,total,isDone){
 }
 
 async function togT(id){
-  const t=tasks.find(x=>x.id===id); if(!t)return;
-  t.done=!t.done; render();
-  await api(`/rest/v1/tasks?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({done:t.done})});
+  const t=tasks.find(x=>x.id===id);if(!t)return;
+  t.done=!t.done;render();
+  try{await api(`/rest/v1/tasks?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({done:t.done})});}
+  catch(e){t.done=!t.done;render();}
 }
-
-async function delT(id){
-  tasks=tasks.filter(x=>x.id!==id); render();
-  await api(`/rest/v1/tasks?id=eq.${id}`,{method:'DELETE'});
-}
-
+async function delT(id){tasks=tasks.filter(x=>x.id!==id);render();await api(`/rest/v1/tasks?id=eq.${id}`,{method:'DELETE'});}
 async function mv(id,dir){
-  const pend=getSorted();
-  const idx=pend.findIndex(t=>t.id===id),ni=idx+dir;
+  const pend=getSorted();const idx=pend.findIndex(t=>t.id===id),ni=idx+dir;
   if(ni<0||ni>=pend.length)return;
-  const a=pend[idx],b=pend[ni];
-  const ap=a.priority,bp=b.priority;
-  a.priority=bp; b.priority=ap;
-  if(a.priority===b.priority){b.priority=Math.max(1,Math.min(3,b.priority+(dir>0?0.1:-0.1)));}
+  const a=pend[idx],b=pend[ni];[a.priority,b.priority]=[b.priority,a.priority];
+  if(a.priority===b.priority)b.priority=Math.max(1,Math.min(3,b.priority+(dir>0?.1:-.1)));
   render();
-  await Promise.all([
-    api(`/rest/v1/tasks?id=eq.${a.id}`,{method:'PATCH',body:JSON.stringify({priority:Math.round(a.priority)})}),
-    api(`/rest/v1/tasks?id=eq.${b.id}`,{method:'PATCH',body:JSON.stringify({priority:Math.round(b.priority)})})
-  ]);
+  await Promise.all([api(`/rest/v1/tasks?id=eq.${a.id}`,{method:'PATCH',body:JSON.stringify({priority:Math.round(a.priority)})}),api(`/rest/v1/tasks?id=eq.${b.id}`,{method:'PATCH',body:JSON.stringify({priority:Math.round(b.priority)})})]);
 }
 
+// SCHEDULE
 function rSched(c){
-  const active=[...schedule].filter(s=>!isPast(s.time)).sort((a,b)=>a.time.localeCompare(b.time));
-  const past=[...schedule].filter(s=>isPast(s.time)).sort((a,b)=>a.time.localeCompare(b.time));
   const scBar={work:'srb-w',health:'srb-h',personal:'srb-p'};
+  const repLabel={daily:'🔁 Каждый день',weekdays:'🔁 По будням',weekends:'🔁 Выходные'};
+  const recurring=schedule.filter(s=>s.repeat&&s.repeat!=='none').sort((a,b)=>a.time.localeCompare(b.time));
+  const oneTime=schedule.filter(s=>!s.repeat||s.repeat==='none').sort((a,b)=>a.time.localeCompare(b.time));
+  const active=oneTime.filter(s=>!isPast(s.time));
+  const past=oneTime.filter(s=>isPast(s.time));
   let h='';
-  if(!schedule.length){h=`<div class="empty"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Расписание пусто</div>`;}
+  if(!schedule.length){h='<div class="empty"><div class="e-icon">📅</div><div class="e-title">Расписание пустое</div><div>Добавь первый блок</div></div>';}
   else{
-    if(active.length){h+=`<div class="sec-hd"><span class="sec-lbl">Расписание</span><span class="sec-badge">${active.length}</span></div><div class="sched-wrap">`;active.forEach(x=>{h+=srRow(x,false,scBar)});h+='</div>';}
-    if(past.length){h+=`<div class="past-label">Прошедшие</div><div class="sched-wrap">`;past.forEach(x=>{h+=srRow(x,true,scBar)});h+='</div>';}
+    if(recurring.length){
+      h+=`<div class="sec-hd"><span class="sec-lbl">📌 Фиксированные</span><span class="sec-badge">${recurring.length}</span></div><div class="sched-wrap">`;
+      recurring.forEach(x=>{h+=srRow(x,false,scBar,repLabel)});h+='</div>';
+    }
+    if(active.length){
+      h+=`<div class="sec-hd" style="margin-top:10px"><span class="sec-lbl">Сегодня</span><span class="sec-badge">${active.length}</span></div><div class="sched-wrap">`;
+      active.forEach(x=>{h+=srRow(x,false,scBar,repLabel)});h+='</div>';
+    }
+    if(past.length){
+      h+=`<div class="past-label">Прошедшие</div><div class="sched-wrap">`;
+      past.forEach(x=>{h+=srRow(x,true,scBar,repLabel)});h+='</div>';
+    }
   }
   c.innerHTML=h;
 }
-
-function srRow(x,p,scBar){return `<div class="sr ${p?'pr':''}"><div class="sr-time ${p?'pt':''}">${x.time}</div><div class="sr-bar ${scBar[x.cat]}"></div><div class="sr-info"><div class="sr-name">${x.name}</div><div class="sr-sub">${x.sub||''}</div></div><div class="sr-del" onclick="delS('${x.id}')">${ico.x}</div></div>`;}
-
-async function delS(id){
-  schedule=schedule.filter(x=>x.id!==id); render();
-  await api(`/rest/v1/schedule?id=eq.${id}`,{method:'DELETE'});
+function srRow(x,p,scBar,repLabel){
+  const rep=x.repeat&&x.repeat!=='none'?`<div style="font-size:10px;color:var(--gr2);font-weight:600;margin-top:2px">${repLabel[x.repeat]||''}</div>`:'';
+  return `<div class="sr ${p?'pr':''}">
+    <div class="sr-time ${p?'pt':''}">${x.time||''}</div>
+    <div class="sr-bar ${scBar[x.cat]||'srb-p'}"></div>
+    <div class="sr-info"><div class="sr-name">${x.name}</div>${x.sub?`<div class="sr-sub">${x.sub}</div>`:''}${rep}</div>
+    <div class="sr-del" onclick="delS('${x.id}')">✕</div>
+  </div>`;
 }
+async function delS(id){schedule=schedule.filter(x=>x.id!==id);render();await api(`/rest/v1/schedule?id=eq.${id}`,{method:'DELETE'});}
 
-function ring(pct,size,stroke,color,bg){
-  const r=(size-stroke)/2,circ=2*Math.PI*r,dash=circ*(pct/100);
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg);display:block">
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${bg}" stroke-width="${stroke}"/>
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${dash} ${circ}"/>
-  </svg>`;
-}
-
-function makeWeek(doneSet){
-  const days=[];
-  for(let i=0;i<7;i++){const off=i-todayDow;const dt=new Date(now);dt.setDate(todayD+off);const d=dt.getDate(),inMonth=dt.getMonth()===now.getMonth();days.push({dow:i,date:d,inMonth,isToday:i===todayDow,isFuture:i>todayDow,isDone:inMonth&&doneSet.has(d)});}
-  return days;
-}
-
+// HABITS
 function rHabits(c){
-  if(!habits.length){c.innerHTML='<div class="empty"><div style="font-size:40px;margin-bottom:12px">🔥</div><div style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:6px">Нет привычек</div><div style="font-size:13px;color:var(--mu)">Добавь первую привычку и начни серию</div></div>';return;}
+  if(!habits.length){c.innerHTML='<div class="empty"><div class="e-icon">🔥</div><div class="e-title">Нет привычек</div><div>Добавь первую и начни серию</div></div>';return;}
   let h=`<div class="sec-hd"><span class="sec-lbl">Привычки</span><span class="sec-badge">${habits.length}</span></div>`;
   habits.forEach(h2=>{
     const pct=Math.round(h2.done.size/daysInMonth*100);
     let streak=0;for(let d=todayD;d>=1;d--){if(h2.done.has(d))streak++;else break;}
     const week=makeWeek(h2.done);
-    const streakBadge = streak >= 3 ? `<span style="background:#fff3e0;color:#e65100;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px">🔥 ${streak} дней</span>` : `<span style="font-size:11px;color:var(--mu)">${streak} дн. подряд</span>`;
-    const ringHtml=`<div style="position:relative;width:56px;height:56px;flex-shrink:0">
-      ${ring(pct,56,6,'#72c25c','#e4f5de')}
-      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
-        <div style="font-size:11px;font-weight:800;color:#4fa843;line-height:1">${pct}%</div>
-        <div style="font-size:7px;color:#8aa880;font-weight:600">${h2.done.size}/${daysInMonth}</div>
-      </div></div>`;
+    const ringHtml=ring(pct,54,6,'#72c25c','#e4f5de');
+    const streakBadge=streak>=3?`<span class="h-streak-badge">🔥 ${streak} дней</span>`:`<span style="font-size:11px;color:var(--mu)">${streak} дн.</span>`;
     let dots='';
     week.forEach(day=>{
       const cls='h-dot'+(day.isDone?' on':'')+(day.isToday?' today-d':'');
       const click=!day.isFuture&&day.inMonth?`onclick="togDay('${h2.id}',${day.date})"`:''
-      dots+=`<div class="h-day"><div class="h-day-lbl">${DL[day.dow][0]}</div><div class="${cls}" ${click}>${ico.check}</div></div>`;
+      dots+=`<div class="h-day"><div class="h-day-lbl">${DL[day.dow][0]}</div><div class="${cls}" ${click}>${day.isDone?'✓':''}</div></div>`;
     });
-    h+=`<div class="h-card"><div class="h-top">${ringHtml}<div class="h-info"><div class="h-name">${h2.name}</div><div class="h-meta"><div class="h-streak">🔥 ${streak} дн. подряд</div><button class="h-del" onclick="delH('${h2.id}')">${ico.trash}</button></div></div></div><div class="h-week">${dots}</div></div>`;
+    h+=`<div class="h-card"><div class="h-top">
+      <div style="position:relative;width:54px;height:54px;flex-shrink:0">${ringHtml}<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:11px;font-weight:800;color:#4fa843;line-height:1">${pct}%</div><div style="font-size:7px;color:#8aa880;font-weight:600">${h2.done.size}/${daysInMonth}</div></div></div>
+      <div class="h-info"><div class="h-name">${h2.name}</div><div class="h-meta">${streakBadge}<button class="h-del" onclick="delH('${h2.id}')">🗑</button></div></div>
+    </div><div class="h-week">${dots}</div></div>`;
   });
   c.innerHTML=h;
 }
-
+function ring(pct,size,stroke,color,bg){const r=(size-stroke)/2,circ=2*Math.PI*r,dash=circ*(pct/100);return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg);display:block"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${bg}" stroke-width="${stroke}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${dash} ${circ}"/></svg>`;}
+function makeWeek(doneSet){const days=[];for(let i=0;i<7;i++){const off=i-todayDow;const dt=new Date(now);dt.setDate(todayD+off);const d=dt.getDate(),inMonth=dt.getMonth()===now.getMonth();days.push({dow:i,date:d,inMonth,isToday:i===todayDow,isFuture:i>todayDow,isDone:inMonth&&doneSet.has(d)});}return days;}
 async function togDay(id,day){
   const h=habits.find(x=>x.id===id);if(!h)return;
-  if(h.done.has(day))h.done.delete(day);else h.done.add(day);
-  render();
+  if(h.done.has(day))h.done.delete(day);else h.done.add(day);render();
   await api(`/rest/v1/habits?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({done_days:[...h.done]})});
 }
+async function delH(id){habits=habits.filter(x=>x.id!==id);render();await api(`/rest/v1/habits?id=eq.${id}`,{method:'DELETE'});}
 
-async function delH(id){
-  habits=habits.filter(x=>x.id!==id);render();
-  await api(`/rest/v1/habits?id=eq.${id}`,{method:'DELETE'});
-}
-
+// GOALS with linked tasks
 function rGoals(c){
   const active=goals.filter(g=>!g.done),done=goals.filter(g=>g.done);
-  let h=`<div class="sec-hd"><span class="sec-lbl">Цели на ${MN2[now.getMonth()]}</span><span class="sec-badge">${done.length}/${goals.length}</span></div><div class="goals-wrap">`;
+  let h=`<div class="sec-hd"><span class="sec-lbl">Цели на ${MN[now.getMonth()]}</span><span class="sec-badge">${done.length}/${goals.length}</span></div>`;
+  if(!goals.length){h+='<div class="empty"><div class="e-icon">🏆</div><div class="e-title">Нет целей</div><div>Добавь первую цель на месяц</div></div>';c.innerHTML=h;return;}
   [...active,...done].forEach(g=>{
     const dl=g.deadline-todayD;
-    const dlTxt=g.done?'выполнено':dl>0?`${dl} дн. до дедлайна`:dl===0?'сегодня дедлайн!':'дедлайн прошёл';
-    h+=`<div class="goal-row ${g.done?'done-g':''}"><div class="gchk ${g.done?'on':''}" onclick="togG('${g.id}')">${ico.check}</div><div class="g-txt"><div class="g-name ${g.done?'xg':''}">${g.name}</div><div class="g-dl ${!g.done&&dl<=3?'urgent':''}">${dlTxt}</div></div><button class="g-del" onclick="delG('${g.id}')">${ico.trash}</button></div>`;
+    const dlTxt=g.done?'✅ выполнено':dl>0?`${dl} дн. до дедлайна`:dl===0?'⚡ сегодня дедлайн!':'❌ дедлайн прошёл';
+    const urgent=!g.done&&dl<=3;
+    const linkedTasks=tasks.filter(t=>t.goal_id===g.id);
+    const doneLT=linkedTasks.filter(t=>t.done).length;
+    h+=`<div class="goal-row ${g.done?'done-g':''}">
+      <div class="goal-main">
+        <div class="gchk ${g.done?'on':''}" onclick="togG('${g.id}')">${g.done?'✓':''}</div>
+        <div class="g-txt">
+          <div class="g-name ${g.done?'xg':''}">${g.name}</div>
+          <div class="g-dl ${urgent?'urgent':''}">${dlTxt}${linkedTasks.length?` · задач: ${doneLT}/${linkedTasks.length}`:''}</div>
+        </div>
+        <button class="g-del" onclick="delG('${g.id}')">🗑</button>
+      </div>`;
+    if(linkedTasks.length){
+      h+=`<div class="g-tasks">`;
+      linkedTasks.forEach(t=>{
+        h+=`<div class="g-task-item" onclick="togT('${t.id}')">
+          <div class="g-task-chk ${t.done?'on':''}">${t.done?'✓':''}</div>
+          <div class="g-task-name ${t.done?'x':''}">${t.name}</div>
+        </div>`;
+      });
+      h+='</div>';
+    }
+    h+='</div>';
   });
-  h+=`</div>`;c.innerHTML=h;
+  c.innerHTML=h;
 }
-
 async function togG(id){
   const g=goals.find(x=>x.id===id);if(!g)return;
-  const prev=g.done;
-  g.done=!g.done;render();
-  try {
-    await api(`/rest/v1/goals?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({done:g.done})});
-  } catch(e) {
-    g.done=prev;render();
-    alert('Не удалось сохранить. Проверь соединение.');
+  const prev=g.done;g.done=!g.done;render();
+  try{await api(`/rest/v1/goals?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({done:g.done})});}
+  catch(e){g.done=prev;render();}
+}
+async function delG(id){goals=goals.filter(x=>x.id!==id);render();await api(`/rest/v1/goals?id=eq.${id}`,{method:'DELETE'});}
+
+// ADD SHEET
+let addType='task';
+function setAddType(type){
+  addType=type;
+  ['task','habit','goal','schedule'].forEach(t=>{
+    const btn=document.getElementById('type-'+t);
+    btn.style.background=t===type?'var(--grs)':'none';
+    btn.style.borderColor=t===type?'var(--gr)':'var(--brd)';
+    btn.style.color=t===type?'var(--gr2)':'var(--mu)';
+  });
+  document.getElementById('task-fields').style.display=type==='task'?'block':'none';
+  document.getElementById('sched-fields').style.display=type==='schedule'?'block':'none';
+  document.getElementById('goal-fields').style.display=type==='goal'?'block':'none';
+  document.getElementById('goal-link-field').style.display=type==='task'?'block':'none';
+  // Populate goal dropdowns
+  if(type==='task'||type==='goal'){
+    const sel=document.getElementById('inp-task-goal');
+    sel.innerHTML='<option value="">— без привязки —</option>';
+    goals.forEach(g=>{sel.innerHTML+=`<option value="${g.id}">${g.name}</option>`});
   }
 }
 
-async function delG(id){
-  goals=goals.filter(x=>x.id!==id);render();
-  await api(`/rest/v1/goals?id=eq.${id}`,{method:'DELETE'});
-}
-
-let mTab='tasks';
+let mTab='task';
 function openM(){
-  mTab=tab;
-  const tt={tasks:'Новая задача',schedule:'Новый блок',habits:'Новая привычка',goals:'Новая цель'};
-  document.getElementById('sh-title').textContent=tt[tab]||'Добавить';
-  document.getElementById('task-fields').style.display=(tab==='tasks'||tab==='schedule')?'block':'none';
-  document.getElementById('prow').style.display=tab==='tasks'?'block':'none';
-  document.getElementById('goal-fields').style.display=tab==='goals'?'block':'none';
-  document.getElementById('sched-repeat').style.display=tab==='schedule'?'block':'none';
-  document.getElementById('inp-n').value='';document.getElementById('inp-t').value='';
+  mTab=tab==='tasks'?'task':tab==='habits'?'habit':tab==='goals'?'goal':tab==='schedule'?'schedule':'task';
+  document.getElementById('inp-n').value='';
+  document.getElementById('inp-t').value='';
   document.getElementById('ov').classList.add('open');
+  setAddType(mTab);
 }
 function closeM(){document.getElementById('ov').classList.remove('open');}
 
 async function addIt(){
   const name=document.getElementById('inp-n').value.trim();if(!name)return;
-  const btn=document.getElementById('sh-ok-btn');
-  btn.disabled=true;btn.textContent='...';
+  const btn=document.getElementById('sh-ok-btn');btn.disabled=true;btn.textContent='...';
   try{
     const token=localStorage.getItem('sb_token');
-    // get user id
     const meRes=await fetch(SUPA_URL+'/auth/v1/user',{headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${token}`}});
-    const me=await meRes.json();
-    const uid=me.id;
-    if(mTab==='tasks'){
-      const time=document.getElementById('inp-t').value;
+    const me=await meRes.json();const uid=me.id;
+    if(addType==='task'){
+      const time=document.getElementById('inp-t').value||null;
       const cat=document.getElementById('inp-cat').value;
       const priority=parseInt(document.getElementById('inp-p').value);
-      const taskTime = time || null;
-      const res=await api('/rest/v1/tasks',{method:'POST',body:JSON.stringify(Object.assign({name,cat,priority,done:false,user_id:uid}, taskTime ? {time:taskTime} : {}))});
-      const newTask = res && res[0];
-      if(newTask) tasks.push(newTask);
-      // Auto-add to schedule if time was specified
-      if(time) {
-        const sRes=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat:'none',user_id:uid})});
-        if(sRes && sRes[0]) schedule.push(sRes[0]);
-      }
-    } else if(mTab==='schedule'){
-      const time=document.getElementById('inp-t').value||'09:00';
-      const cat=document.getElementById('inp-cat').value;
-      const repeat=document.getElementById('inp-repeat')?document.getElementById('inp-repeat').value:'none';
-      const res=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat:repeat||'none',user_id:uid})});
-      if(res && res[0]) schedule.push(res[0]);
-    } else if(mTab==='habits'){
+      const goalId=document.getElementById('inp-task-goal').value||null;
+      const body=Object.assign({name,cat,priority,done:false,user_id:uid},time?{time}:{},goalId?{goal_id:goalId}:{});
+      const res=await api('/rest/v1/tasks',{method:'POST',body:JSON.stringify(body)});
+      if(res&&res[0])tasks.push(res[0]);
+      if(time){const sr=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat:'none',user_id:uid})});if(sr&&sr[0])schedule.push(sr[0]);}
+    } else if(addType==='schedule'){
+      const time=document.getElementById('inp-st').value||'09:00';
+      const cat=document.getElementById('inp-scat').value;
+      const repeat=document.getElementById('inp-repeat').value;
+      const res=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat,user_id:uid})});
+      if(res&&res[0])schedule.push(res[0]);
+    } else if(addType==='habit'){
       const res=await api('/rest/v1/habits',{method:'POST',body:JSON.stringify({name,done_days:[],user_id:uid})});
-      const h=res&&res[0];if(h){h.done=new Set(h.done_days||[]);habits.push(h);}
+      const h=res&&res[0];if(h){h.done=new Set();habits.push(h);}
     } else {
       const deadline=parseInt(document.getElementById('inp-deadline').value)||31;
       const res=await api('/rest/v1/goals',{method:'POST',body:JSON.stringify({name,deadline,done:false,user_id:uid})});
-      if(res && res[0]) goals.push(res[0]);
+      if(res&&res[0])goals.push(res[0]);
     }
     closeM();render();
-  } catch(e){alert('Ошибка: '+e.message);}
+  }catch(e){alert('Ошибка: '+e.message);}
   btn.disabled=false;btn.textContent='Добавить';
 }
 
-// PWA install
-// SW disabled
+// EVENING
+let dayRating=0;
+function openEvening(){
+  // Auto-fill tomorrow with unfinished tasks
+  const unfinished=tasks.filter(t=>!t.done).map(t=>t.name).join('\n');
+  document.getElementById('ev-tomorrow').value=unfinished;
+  document.getElementById('ev-modal').classList.add('open');
+}
+function closeEvening(){document.getElementById('ev-modal').classList.remove('open');}
+function setRating(r){
+  dayRating=r;
+  document.querySelectorAll('.rating-btn').forEach((b,i)=>b.classList.toggle('sel',i+1===r));
+}
+function saveEvening(){
+  const done=document.getElementById('ev-done').value;
+  const tomorrow=document.getElementById('ev-tomorrow').value;
+  localStorage.setItem('evening_'+todayD,JSON.stringify({rating:dayRating,done,tomorrow}));
+  closeEvening();
+  alert('Итог дня сохранён! 🌙');
+}
 </script>
 </body>
 </html>
