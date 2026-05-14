@@ -676,13 +676,14 @@ async function addIt(){
       if(newTask) tasks.push(newTask);
       // Auto-add to schedule if time was specified
       if(time) {
-        const sRes=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,user_id:uid})});
+        const sRes=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat:'none',user_id:uid})});
         if(sRes && sRes[0]) schedule.push(sRes[0]);
       }
     } else if(mTab==='schedule'){
       const time=document.getElementById('inp-t').value||'09:00';
       const cat=document.getElementById('inp-cat').value;
-      const res=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,user_id:uid})});
+      const repeat=document.getElementById('inp-repeat')?document.getElementById('inp-repeat').value:'none';
+      const res=await api('/rest/v1/schedule',{method:'POST',body:JSON.stringify({name,time,sub:'',cat,repeat:repeat||'none',user_id:uid})});
       if(res && res[0]) schedule.push(res[0]);
     } else if(mTab==='habits'){
       const res=await api('/rest/v1/habits',{method:'POST',body:JSON.stringify({name,done_days:[],user_id:uid})});
