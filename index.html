@@ -317,11 +317,16 @@ const api = async (path, opts={}) => {
 
 const authApi = async (path, body) => {
   const res = await fetch(SUPA_URL + '/auth/v1' + path, {
-    method: 'POST', headers: {'apikey': SUPA_KEY, 'Content-Type': 'application/json'},
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + SUPA_KEY
+    },
     body: JSON.stringify(body)
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error_description || data.msg || 'Ошибка');
+  if (!res.ok) throw new Error(data.error_description || data.error || data.msg || 'Ошибка сервера');
   return data;
 };
 
@@ -344,11 +349,12 @@ async function doAuth() {
   try {
     const path = authMode === 'login' ? '/token?grant_type=password' : '/signup';
     const data = await authApi(path, {email, password: pass});
-    if (authMode === 'register' && !data.access_token) {
-      document.getElementById('auth-err').textContent = 'Проверь email для подтверждения';
+    const token = data.access_token || (data.session && data.session.access_token);
+    if (!token) {
+      document.getElementById('auth-err').textContent = 'Проверь email — нужно подтвердить регистрацию';
       btn.disabled = false; btn.textContent = 'Зарегистрироваться'; return;
     }
-    localStorage.setItem('sb_token', data.access_token);
+    localStorage.setItem('sb_token', token);
     localStorage.setItem('sb_email', email);
     startApp(email);
   } catch(e) {
