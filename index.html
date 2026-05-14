@@ -175,6 +175,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 .sh-no{width:100%;padding:12px;background:var(--bg);border:1.5px solid var(--brd);border-radius:16px;font-size:13px;cursor:pointer;color:var(--mu);font-family:inherit;margin-top:8px;font-weight:600}
 .empty{text-align:center;padding:32px 0;color:var(--mu);font-size:13px}
 .empty svg{width:32px;height:32px;fill:var(--brd);display:block;margin:0 auto 10px}
+.empty a{color:var(--gr2);text-decoration:none;font-weight:600}
 .loading{text-align:center;padding:32px 0;color:var(--mu);font-size:13px}
 .spin{display:inline-block;width:24px;height:24px;border:3px solid var(--brd);border-top-color:var(--gr);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -259,9 +260,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
     </div>
     <div class="content" id="mc"></div>
     <div class="fab-row">
-      <button class="fab" onclick="openM()">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
+      <button class="fab" onclick="openM()" style="font-size:28px;font-weight:300;color:#fff;line-height:1">+</button>
     </div>
   </div>
 </div>
@@ -307,12 +306,22 @@ const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 
 const api = async (path, opts={}) => {
   const token = localStorage.getItem('sb_token');
-  const res = await fetch(SUPA_URL + path, {
-    headers: {'apikey': SUPA_KEY, 'Authorization': `Bearer ${token||SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...opts.headers},
-    ...opts
-  });
-  if (!res.ok && res.status !== 204) { const e = await res.json().catch(()=>({message:res.statusText})); throw new Error(e.message||e.error_description||'Ошибка'); }
-  return res.status === 204 ? null : res.json().catch(()=>null);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const res = await fetch(SUPA_URL + path, {
+      headers: {'apikey': SUPA_KEY, 'Authorization': `Bearer ${token||SUPA_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...opts.headers},
+      signal: controller.signal,
+      ...opts
+    });
+    clearTimeout(timeout);
+    if (!res.ok && res.status !== 204) { const e = await res.json().catch(()=>({message:res.statusText})); throw new Error(e.message||e.error_description||'Ошибка'); }
+    return res.status === 204 ? null : res.json().catch(()=>null);
+  } catch(e) {
+    clearTimeout(timeout);
+    if (e.name === 'AbortError') throw new Error('Превышено время ожидания');
+    throw e;
+  }
 };
 
 const authApi = async (path, body) => {
@@ -405,20 +414,29 @@ let tasks=[], schedule=[], habits=[], goals=[];
 
 async function loadAll() {
   document.getElementById('mc').innerHTML = '<div class="loading"><div class="spin"></div><br>Загрузка...</div>';
-  try {
-    const [t,s,h,g] = await Promise.all([
-      api('/rest/v1/tasks?order=created_at'),
-      api('/rest/v1/schedule?order=time'),
-      api('/rest/v1/habits?order=created_at'),
-      api('/rest/v1/goals?order=created_at'),
-    ]);
-    tasks = (t||[]).map(x=>({...x, done_days: undefined}));
-    schedule = s||[];
-    habits = (h||[]).map(x=>({...x, done: new Set(x.done_days||[])}));
-    goals = g||[];
-    render();
-  } catch(e) {
-    document.getElementById('mc').innerHTML = `<div class="empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Ошибка загрузки</div>`;
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      const [t,s,h,g] = await Promise.all([
+        api('/rest/v1/tasks?order=created_at'),
+        api('/rest/v1/schedule?order=time'),
+        api('/rest/v1/habits?order=created_at'),
+        api('/rest/v1/goals?order=created_at'),
+      ]);
+      tasks = (t||[]).map(x=>({...x, done_days: undefined}));
+      schedule = s||[];
+      habits = (h||[]).map(x=>({...x, done: new Set(x.done_days||[])}));
+      goals = g||[];
+      render();
+      return;
+    } catch(e) {
+      retries--;
+      if (retries === 0) {
+        document.getElementById('mc').innerHTML = '<div class="empty"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Нет соединения — <a href="#" onclick="loadAll()" style="color:#72c25c">повторить</a></div>';
+      } else {
+        await new Promise(r => setTimeout(r, 1000));
+      }
+    }
   }
 }
 
