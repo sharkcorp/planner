@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Planner">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="/planner/manifest.json">
+<link rel="apple-touch-icon" href="/planner/icon-192.png">
 <title>Planner for Life</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -649,7 +649,7 @@ async function addIt(){
 }
 
 // PWA install
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/planner/sw.js');}
 </script>
 </body>
 </html>
