@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Planner">
-<link rel="manifest" href="/planner/manifest.json">
-<link rel="apple-touch-icon" href="/planner/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <title>Planner for Life</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -286,11 +286,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
       </div>
       <div id="prow"><div class="sh-lbl">Приоритет</div>
         <select class="sh-inp" id="inp-p">
-          <option value="1">Высокий</option>
-          <option value="2" selected>Средний</option>
-          <option value="3">Низкий</option>
+          <option value="1">🔴 Срочно</option>
+          <option value="2" selected>🟡 Важно</option>
+          <option value="3">🟢 Можно позже</option>
         </select>
       </div>
+    </div>
+    <div id="sched-repeat" style="display:none">
+      <div class="sh-lbl">Повтор</div>
+      <select class="sh-inp" id="inp-repeat">
+        <option value="none">Один раз</option>
+        <option value="daily">Каждый день 🔁</option>
+        <option value="weekdays">По будням</option>
+        <option value="weekends">По выходным</option>
+      </select>
     </div>
     <div id="goal-fields" style="display:none">
       <div class="sh-lbl">Дедлайн (число месяца)</div>
@@ -501,7 +510,7 @@ function tCard(t,num,total,isDone){
       <div class="chk ${t.done?'on':''}" onclick="togT('${t.id}')">${ico.check}</div>
       <div class="t-txt">
         <div class="t-name ${t.done?'x':''}">${t.name}</div>
-        <div class="t-meta ${past?'past':''}">${ico.clock}${t.time}${past?' · просрочена':''}</div>
+        <div class="t-meta ${past?'past':''}">${t.time ? ico.clock+t.time+(past?' · просрочена':'') : '<span style="color:var(--mu);font-size:10px">без времени</span>'}</div>
       </div>
     </div>
     <div class="t-acts">${u}${d}${del}</div>
@@ -569,12 +578,13 @@ function makeWeek(doneSet){
 }
 
 function rHabits(c){
-  if(!habits.length){c.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>Нет привычек</div>`;return;}
+  if(!habits.length){c.innerHTML='<div class="empty"><div style="font-size:40px;margin-bottom:12px">🔥</div><div style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:6px">Нет привычек</div><div style="font-size:13px;color:var(--mu)">Добавь первую привычку и начни серию</div></div>';return;}
   let h=`<div class="sec-hd"><span class="sec-lbl">Привычки</span><span class="sec-badge">${habits.length}</span></div>`;
   habits.forEach(h2=>{
     const pct=Math.round(h2.done.size/daysInMonth*100);
     let streak=0;for(let d=todayD;d>=1;d--){if(h2.done.has(d))streak++;else break;}
     const week=makeWeek(h2.done);
+    const streakBadge = streak >= 3 ? `<span style="background:#fff3e0;color:#e65100;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px">🔥 ${streak} дней</span>` : `<span style="font-size:11px;color:var(--mu)">${streak} дн. подряд</span>`;
     const ringHtml=`<div style="position:relative;width:56px;height:56px;flex-shrink:0">
       ${ring(pct,56,6,'#72c25c','#e4f5de')}
       <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
@@ -617,8 +627,14 @@ function rGoals(c){
 
 async function togG(id){
   const g=goals.find(x=>x.id===id);if(!g)return;
+  const prev=g.done;
   g.done=!g.done;render();
-  await api(`/rest/v1/goals?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({done:g.done})});
+  try {
+    await api(`/rest/v1/goals?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({done:g.done})});
+  } catch(e) {
+    g.done=prev;render();
+    alert('Не удалось сохранить. Проверь соединение.');
+  }
 }
 
 async function delG(id){
@@ -634,6 +650,7 @@ function openM(){
   document.getElementById('task-fields').style.display=(tab==='tasks'||tab==='schedule')?'block':'none';
   document.getElementById('prow').style.display=tab==='tasks'?'block':'none';
   document.getElementById('goal-fields').style.display=tab==='goals'?'block':'none';
+  document.getElementById('sched-repeat').style.display=tab==='schedule'?'block':'none';
   document.getElementById('inp-n').value='';document.getElementById('inp-t').value='';
   document.getElementById('ov').classList.add('open');
 }
@@ -653,8 +670,8 @@ async function addIt(){
       const time=document.getElementById('inp-t').value;
       const cat=document.getElementById('inp-cat').value;
       const priority=parseInt(document.getElementById('inp-p').value);
-      const taskTime = time || '09:00';
-      const res=await api('/rest/v1/tasks',{method:'POST',body:JSON.stringify({name,time:taskTime,cat,priority,done:false,user_id:uid})});
+      const taskTime = time || null;
+      const res=await api('/rest/v1/tasks',{method:'POST',body:JSON.stringify(Object.assign({name,cat,priority,done:false,user_id:uid}, taskTime ? {time:taskTime} : {}))});
       const newTask = res && res[0];
       if(newTask) tasks.push(newTask);
       // Auto-add to schedule if time was specified
